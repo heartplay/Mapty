@@ -21,7 +21,6 @@ if (navigator.geolocation)
         function (position) {
             const { latitude, longitude } = position.coords;
             const coords = [latitude, longitude];
-
             // Loading leaflet styled map according to coordinates
             map = L.map('map', { attributionControl: false }).setView(coords, 13);
             // Link to leaflet and openstreetmap
@@ -29,7 +28,6 @@ if (navigator.geolocation)
             L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             }).addTo(map);
-
             // Leaflet event listener for click on map
             map.on(`click`, function (mapE) {
                 // Getting leaflet event object
@@ -65,4 +63,7 @@ form.addEventListener(`submit`, function (e) {
         )
         .setPopupContent(`Workout`) // setting popup content
         .openPopup();
+    // Clear all inputs after submitting
+    inputDistance.value = inputDuration.value = inputCadence.value = inputElevation.value = ``;
+    inputDistance.focus();
 });
