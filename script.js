@@ -67,3 +67,9 @@ form.addEventListener(`submit`, function (e) {
     inputDistance.value = inputDuration.value = inputCadence.value = inputElevation.value = ``;
     inputDistance.focus();
 });
+
+// Toggling cadence/elevation inputs after selecting running/cycling
+inputType.addEventListener(`change`, function () {
+    inputCadence.closest(`.form__row`).classList.toggle(`form__row--hidden`);
+    inputElevation.closest(`.form__row`).classList.toggle(`form__row--hidden`);
+});
