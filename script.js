@@ -11,27 +11,58 @@ const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
 
+// Leaflet map, leaflet event on map
+let map, mapEvent;
+
 // browser geolocation API
 if (navigator.geolocation)
+    // Getting current coordinates from browser
     navigator.geolocation.getCurrentPosition(
         function (position) {
-            console.log(position);
-            const { latitude } = position.coords;
-            const { longitude } = position.coords;
-            console.log(latitude, longitude);
-            console.log(`https://www.google.com/maps/@${latitude},${longitude}`);
+            const { latitude, longitude } = position.coords;
             const coords = [latitude, longitude];
 
-            const map = L.map('map', { attributionControl: false }).setView(coords, 13);
-            // remove flag
+            // Loading leaflet styled map according to coordinates
+            map = L.map('map', { attributionControl: false }).setView(coords, 13);
+            // Link to leaflet and openstreetmap
             L.control.attribution().setPrefix('<a href="https://leafletjs.com/">Leaflet</a>').addTo(map);
             L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             }).addTo(map);
 
-            L.marker(coords).addTo(map).bindPopup('A pretty CSS popup.<br> Easily customizable.').openPopup();
+            // Leaflet event listener for click on map
+            map.on(`click`, function (mapE) {
+                // Getting leaflet event object
+                mapEvent = mapE;
+                // Show form with inputs
+                form.classList.remove(`hidden`);
+                // Focus on distance input
+                inputDistance.focus();
+            });
         },
+        // No coordinates
         function () {
             alert(`Could not get your position.`);
         }
     );
+
+form.addEventListener(`submit`, function (e) {
+    // Prevent from reload page after submitting
+    e.preventDefault();
+    // Getting coordinates of click on map
+    const { lat, lng } = mapEvent.latlng;
+    // Putting marker on map according to coordinates
+    L.marker([lat, lng])
+        .addTo(map)
+        .bindPopup(
+            L.popup({
+                maxWidth: 250, // max width of mark popup
+                minWidth: 100, // min width of mark popup
+                autoClose: false, // prevent closing popup when another popup is opened
+                closeOnClick: false, // prevent closing popup when click on map
+                className: `running-popup`, // assigning css class name to popup
+            })
+        )
+        .setPopupContent(`Workout`) // setting popup content
+        .openPopup();
+});
