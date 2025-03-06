@@ -213,7 +213,7 @@ class App {
         // Find workout according to clicked element
         const workout = this.#workouts.find((work) => work.id == workoutElement.dataset.id);
         // Focusing map view on workout marker
-        this.#map.setView(workout.coords, this.#mapZoomLevel, {
+        this.#map.setView(workout.coords, this.#mapZoomLevel + 1, {
             animate: true, // Animation of focusing
             pan: {
                 duration: 1, // Duration of animation
