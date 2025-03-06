@@ -14,6 +14,7 @@ const inputElevation = document.querySelector('.form__input--elevation');
 class App {
     #map;
     #mapEvent;
+    #workouts = [];
     constructor() {
         this._getPosition();
         form.addEventListener(`submit`, this._newWorkout.bind(this));
@@ -34,6 +35,7 @@ class App {
     }
 
     _loadMap(position) {
+        // Getting latutude and longitude from geolocation coordinates
         const { latitude, longitude } = position.coords;
         // Loading leaflet styled map according to coordinates
         this.#map = L.map('map', { attributionControl: false }).setView([latitude, longitude], 13);
@@ -64,10 +66,53 @@ class App {
     _newWorkout(e) {
         // Prevent from reload page after submitting
         e.preventDefault();
+        // Handler functions for checking data
+        const validInputs = (...inputs) => inputs.every((input) => Number.isFinite(input));
+        const allPositive = (...inputs) => inputs.every((input) => input > 0);
+
+        // Get data from form(workout type, distance, duration, location)
+        const type = inputType.value;
+        const distance = +inputDistance.value;
+        const duration = +inputDuration.value;
         // Getting coordinates of click on map
         const { lat, lng } = this.#mapEvent.latlng;
+        let workout;
+
+        // If workout running, create running object
+        if (type === `running`) {
+            const cadence = +inputCadence.value;
+            // Check if data is valid
+            if (!(validInputs(distance, duration, cadence) && allPositive(distance, duration, cadence))) {
+                return alert(`Inputs have to be positive numbers!`);
+            }
+            workout = new Running([lat, lng], distance, duration, cadence);
+        }
+
+        // If workout cycling, create cycling object
+        if (type === `cycling`) {
+            const elevation = +inputElevation.value;
+            // Check if data is valid
+            if (!(validInputs(distance, duration, elevation) && allPositive(distance, duration))) {
+                return alert(`Inputs have to be positive numbers!`);
+            }
+            workout = new Cycling([lat, lng], distance, duration, elevation);
+        }
+
+        // Add new object to workout array
+        this.#workouts.push(workout);
+
+        // Render workout on map as marker
+        this.renderWorkoutMarker(workout);
+
+        // Hide form
+
+        // Clear all inputs after submitting
+        inputDistance.value = inputDuration.value = inputCadence.value = inputElevation.value = ``;
+    }
+
+    renderWorkoutMarker(workout) {
         // Putting marker on map according to coordinates
-        L.marker([lat, lng])
+        L.marker(workout.coords)
             .addTo(this.#map)
             .bindPopup(
                 L.popup({
@@ -75,14 +120,11 @@ class App {
                     minWidth: 100, // min width of mark popup
                     autoClose: false, // prevent closing popup when another popup is opened
                     closeOnClick: false, // prevent closing popup when click on map
-                    className: `running-popup`, // assigning css class name to popup
+                    className: `${workout.type}-popup`, // assigning css class name to popup according to workout type
                 })
             )
-            .setPopupContent(`Workout`) // setting popup content
+            .setPopupContent(`${workout.type}`) // setting popup content
             .openPopup();
-        // Clear all inputs after submitting
-        inputDistance.value = inputDuration.value = inputCadence.value = inputElevation.value = ``;
-        inputDistance.focus();
     }
 }
 
@@ -104,6 +146,8 @@ class Workout {
 
 // Running workout class
 class Running extends Workout {
+    // workout type running
+    type = `running`;
     constructor(coords, distance, duration, cadence) {
         super(coords, distance, duration);
         // running workout cadence
@@ -121,6 +165,8 @@ class Running extends Workout {
 
 // Cycling workout class
 class Cycling extends Workout {
+    // workout type cycling
+    type = `cycling`;
     constructor(coords, distance, duration, elevationGain) {
         super(coords, distance, duration);
         // cycling workout elevation
