@@ -25,6 +25,10 @@ class App {
         inputType.addEventListener(`change`, this._toggleCadenceElevationInput);
         // Focusing on clicked workout
         containerWorkouts.addEventListener(`click`, this._moveToWorkout.bind(this));
+        // Hide form on pressing "Esc" button
+        document.addEventListener(`keydown`, (e) => {
+            if (e.key == `Escape` && !form.classList.contains(`hidden`)) this._hideForm();
+        });
     }
 
     // Getting coordinates and loading map according to coordinates
