@@ -9,15 +9,22 @@ const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
 
 class App {
+    // Loaded leaflet map
     #map;
+    // Click event on leaflet map
     #mapEvent;
+    // Workout array
     #workouts = [];
+    // Zoom level on map
+    #mapZoomLevel = 15;
     constructor() {
         this._getPosition();
         // Event listener for submit on input form
         form.addEventListener(`submit`, this._newWorkout.bind(this));
         // Toggling cadence/elevation inputs after selecting running/cycling
         inputType.addEventListener(`change`, this._toggleCadenceElevationInput);
+        // Focusing on clicked workout
+        containerWorkouts.addEventListener(`click`, this._moveToWorkout.bind(this));
     }
 
     // Getting coordinates and loading map according to coordinates
@@ -38,7 +45,7 @@ class App {
         // Getting latutude and longitude from geolocation coordinates
         const { latitude, longitude } = position.coords;
         // Loading leaflet styled map according to coordinates
-        this.#map = L.map('map', { attributionControl: false }).setView([latitude, longitude], 13);
+        this.#map = L.map('map', { attributionControl: false }).setView([latitude, longitude], this.#mapZoomLevel);
         // Link to leaflet and openstreetmap
         L.control.attribution().setPrefix('<a href="https://leafletjs.com/">Leaflet</a>').addTo(this.#map);
         L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
@@ -192,6 +199,23 @@ class App {
         }
         form.insertAdjacentHTML(`afterend`, html);
     }
+
+    // Focusing on clicked workout in list
+    _moveToWorkout(e) {
+        // Select clicked element
+        const workoutElement = e.target.closest(`.workout`);
+        // Guard clause
+        if (!workoutElement) return;
+        // Find workout according to clicked element
+        const workout = this.#workouts.find((work) => work.id == workoutElement.dataset.id);
+        // Focusing map view on workout marker
+        this.#map.setView(workout.coords, this.#mapZoomLevel, {
+            animate: true, // Animation of focusing
+            pan: {
+                duration: 1, // Duration of animation
+            },
+        });
+    }
 }
 
 // Workout class
@@ -209,7 +233,7 @@ class Workout {
         this.duration = duration;
     }
 
-    // Setting formatted description string for workoout
+    // Setting formatted description string for workout
     _setDescription() {
         // Formatted months for description string
         // prettier-ignore
