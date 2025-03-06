@@ -86,5 +86,55 @@ class App {
     }
 }
 
+// Workout class
+class Workout {
+    // workout date
+    date = new Date();
+    // workout id
+    id = crypto.randomUUID();
+    constructor(coords, distance, duration) {
+        // workout coords, latitude and longitude
+        this.coords = coords;
+        // workout distance in km
+        this.distance = distance;
+        // workout duration in min
+        this.duration = duration;
+    }
+}
+
+// Running workout class
+class Running extends Workout {
+    constructor(coords, distance, duration, cadence) {
+        super(coords, distance, duration);
+        // running workout cadence
+        this.cadence = cadence;
+        // running workout pace
+        this.calcPace();
+    }
+
+    // Calculate pace, min/km
+    calcPace() {
+        this.pace = this.duration / this.distance;
+        return this.pace;
+    }
+}
+
+// Cycling workout class
+class Cycling extends Workout {
+    constructor(coords, distance, duration, elevationGain) {
+        super(coords, distance, duration);
+        // cycling workout elevation
+        this.elevationGain = elevationGain;
+        // cycling workout speed
+        this.calcSpeed();
+    }
+
+    // Calculate speed, km/h
+    calcSpeed() {
+        this.speed = this.distance / (this.duration / 60);
+        return this.speed;
+    }
+}
+
 // Init app
 const app = new App();
