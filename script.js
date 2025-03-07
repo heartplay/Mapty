@@ -18,7 +18,11 @@ class App {
     // Zoom level on map
     #mapZoomLevel = 15;
     constructor() {
+        // Get from local storage all workouts
+        this._getLocalStorage();
+        // Get position
         this._getPosition();
+        // Set event listeners
         // Event listener for submit on input form
         form.addEventListener(`submit`, this._newWorkout.bind(this));
         // Toggling cadence/elevation inputs after selecting running/cycling
@@ -28,6 +32,9 @@ class App {
         // Hide form on pressing "Esc" button
         document.addEventListener(`keydown`, (e) => {
             if (e.key == `Escape` && !form.classList.contains(`hidden`)) this._hideForm();
+        });
+        document.addEventListener(`keydown`, (e) => {
+            if (e.key == `Delete`) this.reset();
         });
     }
 
@@ -57,6 +64,10 @@ class App {
         }).addTo(this.#map);
         // Leaflet event listener method for click on map
         this.#map.on(`click`, this._showForm.bind(this));
+        // Render all workout markers from local storage
+        this.#workouts.forEach((workout) => {
+            this._renderWorkoutMarker(workout);
+        });
     }
 
     // Show input form after clicking on map
@@ -135,6 +146,9 @@ class App {
 
         // Hide form, clear inputs
         this._hideForm();
+
+        // Set local storage for all workouts
+        this._setLocalStorage();
     }
 
     // Rendering workout marker on map
@@ -220,6 +234,32 @@ class App {
             },
         });
     }
+
+    // Set local storage for all workouts
+    _setLocalStorage() {
+        localStorage.setItem(`workouts`, JSON.stringify(this.#workouts));
+    }
+
+    // Get local storage with all workouts
+    _getLocalStorage() {
+        // Converting strings from locale storage to workout objects
+        const data = JSON.parse(localStorage.getItem(`workouts`));
+        // Guard clause
+        if (!data) return;
+        this.#workouts = data;
+        // Render all workouts from local storage in list
+        this.#workouts.forEach((workout) => {
+            this._renderWorkout(workout);
+        });
+    }
+
+    // Delete local storage for workouts
+    reset() {
+        // Delete local storage
+        localStorage.removeItem(`workouts`);
+        // Reload page
+        location.reload();
+    }
 }
 
 // Workout class
@@ -293,3 +333,21 @@ class Cycling extends Workout {
 
 // Init app
 const app = new App();
+
+// FUTURE FEATURES
+
+// EASY
+// 1) Edit a workout
+// 2) Delete a workout
+// 3) Delete all workouts
+// 4) Sort all workouts by certain parameter
+// 5) Re-build workout objects from local storage
+// 6) More realistic error and confirmation messages
+
+// HARD
+// 1) Position map to show all workouts
+// 2) Draw lines and shapes instead of points
+
+// AFTER ASYNC JS
+// 1) Geocode location from coordinates
+// 2) Display weather data for workout time and place
