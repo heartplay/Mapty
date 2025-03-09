@@ -7,6 +7,7 @@ const inputDistance = document.querySelector('.form__input--distance');
 const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
+const btnDeleteAllWork = document.querySelector(`.btn--delete-all-workouts`);
 
 class App {
     // Loaded leaflet map
@@ -29,10 +30,9 @@ class App {
         // Toggling cadence/elevation inputs after selecting running/cycling
         inputType.addEventListener(`change`, this._toggleCadenceElevationInput);
         // Focusing on clicked workout
-        // containerWorkouts.addEventListener(`click`, this._moveToWorkout.bind(this));
-
         containerWorkouts.addEventListener(`click`, this._workClickHandler.bind(this));
         // Hide form on pressing "Esc" button
+        btnDeleteAllWork.addEventListener(`click`, this._deleteAllWorkouts.bind(this));
         document.addEventListener(`keydown`, (e) => {
             if (e.key == `Escape` && !form.classList.contains(`hidden`)) this._hideForm();
         });
@@ -292,6 +292,19 @@ class App {
         this.#workouts.forEach((workout) => {
             this._renderWorkout(workout);
         });
+    }
+
+    _deleteAllWorkouts() {
+        // Delete all workout markers on map
+        this.#markers.forEach((marker) => this.#map.removeLayer(marker));
+        // Delete all workout markers from array
+        this.#markers = [];
+        // Delete all workouts
+        this.#workouts = [];
+        // Delete local storage
+        localStorage.removeItem(`workouts`);
+        // Delete all workout elements from list
+        containerWorkouts.innerHTML = ``;
     }
 
     // Delete local storage for workouts
