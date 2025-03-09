@@ -360,7 +360,8 @@ class App {
             // Delete local storage
             localStorage.removeItem(`workouts`);
             // Delete all workout elements from list
-            containerWorkouts.innerHTML = ``;
+            const removedElements = containerWorkouts.querySelectorAll(`.workout`);
+            removedElements.forEach((el) => el.remove());
         }
     }
 
