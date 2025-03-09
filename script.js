@@ -17,6 +17,7 @@ class App {
     #workouts = [];
     // Zoom level on map
     #mapZoomLevel = 15;
+    #markers = [];
     constructor() {
         // Get from local storage all workouts
         this._getLocalStorage();
@@ -28,7 +29,9 @@ class App {
         // Toggling cadence/elevation inputs after selecting running/cycling
         inputType.addEventListener(`change`, this._toggleCadenceElevationInput);
         // Focusing on clicked workout
-        containerWorkouts.addEventListener(`click`, this._moveToWorkout.bind(this));
+        // containerWorkouts.addEventListener(`click`, this._moveToWorkout.bind(this));
+
+        containerWorkouts.addEventListener(`click`, this._workClickHandler.bind(this));
         // Hide form on pressing "Esc" button
         document.addEventListener(`keydown`, (e) => {
             if (e.key == `Escape` && !form.classList.contains(`hidden`)) this._hideForm();
@@ -53,7 +56,7 @@ class App {
 
     // Loading map on page
     _loadMap(position) {
-        // Getting latutude and longitude from geolocation coordinates
+        // Getting latitude and longitude from geolocation coordinates
         const { latitude, longitude } = position.coords;
         // Loading leaflet styled map according to coordinates
         this.#map = L.map('map', { attributionControl: false }).setView([latitude, longitude], this.#mapZoomLevel);
@@ -154,7 +157,7 @@ class App {
     // Rendering workout marker on map
     _renderWorkoutMarker(workout) {
         // Putting marker on map according to coordinates
-        L.marker(workout.coords)
+        const marker = L.marker(workout.coords)
             .addTo(this.#map)
             .bindPopup(
                 L.popup({
@@ -167,6 +170,8 @@ class App {
             )
             .setPopupContent(`${workout.type == `running` ? `🏃‍♂️` : `🚴‍♀️`} ${workout.description}`) // setting popup content
             .openPopup();
+
+        this.#markers.push(marker);
     }
 
     // Rendering workout on list in form
@@ -174,6 +179,7 @@ class App {
         let html = `
         <li class="workout workout--${workout.type}" data-id="${workout.id}">
           <h2 class="workout__title">${workout.description}</h2>
+          <button class="btn--delete-workout">&times;</button>
           <div class="workout__details">
             <span class="workout__icon">${workout.type == `running` ? `🏃‍♂️` : `🚴‍♀️`}</span>
             <span class="workout__value">${workout.distance}</span>
@@ -218,14 +224,49 @@ class App {
         form.insertAdjacentHTML(`afterend`, html);
     }
 
-    // Focusing on clicked workout in list
-    _moveToWorkout(e) {
+    // Handler for workout container
+    _workClickHandler(e) {
         // Select clicked element
-        const workoutElement = e.target.closest(`.workout`);
+        const targetElement = e.target.closest(`.workout`);
         // Guard clause
-        if (!workoutElement) return;
+        if (!targetElement) return;
         // Find workout according to clicked element
-        const workout = this.#workouts.find((work) => work.id == workoutElement.dataset.id);
+        const workout = this.#workouts.find((work) => work.id == targetElement.dataset.id);
+        // If delete button is clicked
+        if (e.target.classList.contains(`btn--delete-workout`)) {
+            this._deleteWorkout.call(this, targetElement, workout);
+            // Focusing map view on workout marker
+        } else {
+            this._moveToWorkout.call(this, workout);
+        }
+    }
+
+    // Delete workout from list, locale storage, array and delete workout marker from map and array
+    _deleteWorkout(targetElement, workout) {
+        // Find index of workout
+        const workInd = this.#workouts.indexOf(workout);
+        // Find workout marker on map
+        const workMark = this.#markers.find((mark) => {
+            const { lat, lng } = mark._latlng;
+            if (lat == workout.coords[0] && lng == workout.coords[1]) return mark;
+        });
+        // Find index of workout marker
+        const workMarkInd = this.#markers.indexOf(workMark);
+
+        // Delete workout element in list
+        targetElement.remove();
+        // Delete workout from array
+        this.#workouts.splice(workInd, 1);
+        // Delete workout marker
+        this.#map.removeLayer(workMark);
+        // Delete workout marker from array
+        this.#markers.splice(workMarkInd, 1);
+        // Set local storage for remaining workouts
+        this._setLocalStorage();
+    }
+
+    // Focusing on clicked workout in list
+    _moveToWorkout(workout) {
         // Focusing map view on workout marker
         this.#map.setView(workout.coords, this.#mapZoomLevel + 1, {
             animate: true, // Animation of focusing
@@ -264,6 +305,8 @@ class App {
 
 // Workout class
 class Workout {
+    marker;
+
     // Workout date
     date = new Date();
     // Workout id
