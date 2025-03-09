@@ -29,10 +29,11 @@ class App {
         form.addEventListener(`submit`, this._newWorkout.bind(this));
         // Toggling cadence/elevation inputs after selecting running/cycling
         inputType.addEventListener(`change`, this._toggleCadenceElevationInput);
-        // Focusing on clicked workout
+        // Click handler for workouts container
         containerWorkouts.addEventListener(`click`, this._workClickHandler.bind(this));
-        // Hide form on pressing "Esc" button
+        // Delete all workouts
         btnDeleteAllWork.addEventListener(`click`, this._deleteAllWorkouts.bind(this));
+        // Hide form on pressing "Esc" button
         document.addEventListener(`keydown`, (e) => {
             if (e.key == `Escape` && !form.classList.contains(`hidden`)) this._hideForm();
         });
@@ -88,9 +89,9 @@ class App {
         inputDistance.value = inputDuration.value = inputCadence.value = inputElevation.value = ``;
 
         // Hide input form
-        form.style.display = `none`;
+        // form.style.display = `none`;
         form.classList.add(`hidden`);
-        setTimeout(() => (form.style.display = `grid`), 1000);
+        // setTimeout(() => (form.style.display = `grid`), 1000);
     }
 
     // Toggling input
@@ -170,7 +171,7 @@ class App {
             )
             .setPopupContent(`${workout.type == `running` ? `🏃‍♂️` : `🚴‍♀️`} ${workout.description}`) // setting popup content
             .openPopup();
-
+        // Add new marker on markers array
         this.#markers.push(marker);
     }
 
@@ -243,6 +244,55 @@ class App {
 
     // Delete workout from list, locale storage, array and delete workout marker from map and array
     _deleteWorkout(targetElement, workout) {
+        // const workInd = this.#workouts.indexOf(workout);
+        // const workMark = this.#markers.find((mark) => {
+        //     const { lat, lng } = mark._latlng;
+        //     if (lat == workout.coords[0] && lng == workout.coords[1]) return mark;
+        // });
+        // const workMarkInd = this.#markers.indexOf(workMark);
+
+        // const height = Number.parseFloat(getComputedStyle(targetElement).getPropertyValue(`margin-bottom`));
+
+        // // targetElement.classList.add('workout--deleting');
+
+        // const deletedHeight = targetElement.offsetHeight + height;
+
+        // const siblingsArr = [];
+        // let sibling = targetElement.nextElementSibling;
+        // // console.log(sibling);
+        // // console.log(sibling.classList.contains(`workout`));
+        // siblingsArr.push(sibling);
+        // while (sibling) {
+        //     sibling = sibling.nextElementSibling;
+        //     if (sibling) siblingsArr.push(sibling);
+        // }
+
+        // if (siblingsArr) {
+        //     siblingsArr.forEach((sib) => {
+        //         sib.style.transform = `translateY(-${deletedHeight}px)`;
+        //         sib.classList.add('workout--shifting');
+        //     });
+        // }
+        // // siblingsArr.forEach((sib) => sib.classList.add('workout--shifting'));
+
+        // // const nextSiblings = Array.from(targetElement.nextElementSibling);
+        // // nextSiblings.forEach((sibling) => sibling.classList.add('workout--shifting'));
+
+        // setTimeout(() => {
+        //     targetElement.remove();
+        //     this.#workouts.splice(workInd, 1);
+        //     this.#map.removeLayer(workMark);
+        //     this.#markers.splice(workMarkInd, 1);
+        //     this._setLocalStorage();
+
+        //     siblingsArr.forEach((sib) => {
+        //         sib.style.transform = '';
+        //         sib.classList.remove('workout--shifting');
+        //     });
+        // }, 500);
+
+        ////////////////////////////////////////////////////////////
+
         // Find index of workout
         const workInd = this.#workouts.indexOf(workout);
         // Find workout marker on map
@@ -257,7 +307,7 @@ class App {
         targetElement.remove();
         // Delete workout from array
         this.#workouts.splice(workInd, 1);
-        // Delete workout marker
+        // Delete workout marker from map
         this.#map.removeLayer(workMark);
         // Delete workout marker from array
         this.#markers.splice(workMarkInd, 1);
@@ -274,6 +324,8 @@ class App {
                 duration: 1, // Duration of animation
             },
         });
+
+        workout.click();
     }
 
     // Set local storage for all workouts
@@ -285,26 +337,48 @@ class App {
     _getLocalStorage() {
         // Converting strings from locale storage to workout objects
         const data = JSON.parse(localStorage.getItem(`workouts`));
+
         // Guard clause
         if (!data) return;
-        this.#workouts = data;
+        this._recreateWorkouts(data);
+
         // Render all workouts from local storage in list
         this.#workouts.forEach((workout) => {
             this._renderWorkout(workout);
         });
     }
 
+    // Delete all workouts
     _deleteAllWorkouts() {
-        // Delete all workout markers on map
-        this.#markers.forEach((marker) => this.#map.removeLayer(marker));
-        // Delete all workout markers from array
-        this.#markers = [];
-        // Delete all workouts
-        this.#workouts = [];
-        // Delete local storage
-        localStorage.removeItem(`workouts`);
-        // Delete all workout elements from list
-        containerWorkouts.innerHTML = ``;
+        if (confirm(`Are you sure you want to delete all workouts?`)) {
+            // Delete all workout markers on map
+            this.#markers.forEach((marker) => this.#map.removeLayer(marker));
+            // Delete all workout markers from array
+            this.#markers = [];
+            // Delete all workouts
+            this.#workouts = [];
+            // Delete local storage
+            localStorage.removeItem(`workouts`);
+            // Delete all workout elements from list
+            containerWorkouts.innerHTML = ``;
+        }
+    }
+
+    // Re-creating workout objects from local storage
+    _recreateWorkouts(data) {
+        let workout;
+        data.forEach((el) => {
+            // Re-creating running workout
+            if (el.type == `running`) {
+                workout = new Running(el.coords, el.distance, el.duration, el.cadence, el.id, el.date);
+            }
+            // Re-creating cycling workout
+            if (el.type == `cycling`) {
+                workout = new Cycling(el.coords, el.distance, el.duration, el.elevationGain, el.id, el.date);
+            }
+            // Add workout object to workout array
+            this.#workouts.push(workout);
+        });
     }
 
     // Delete local storage for workouts
@@ -318,19 +392,19 @@ class App {
 
 // Workout class
 class Workout {
-    marker;
-
-    // Workout date
-    date = new Date();
-    // Workout id
-    id = crypto.randomUUID();
-    constructor(coords, distance, duration) {
+    // Testing
+    clicks = 0;
+    constructor(coords, distance, duration, id = crypto.randomUUID(), date = new Date().toISOString()) {
         // Workout coords, latitude and longitude
         this.coords = coords;
         // Workout distance in km
         this.distance = distance;
         // Workout duration in min
         this.duration = duration;
+        // Workout id
+        this.id = id;
+        // Workout date
+        this.date = date;
     }
 
     // Setting formatted description string for workout
@@ -338,10 +412,18 @@ class Workout {
         // Formatted months for description string
         // prettier-ignore
         const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        // Convert ISO string date to normal date
+        const workoutDate = new Date(this.date);
         // Setting description for workout
         this.description = `${this.type.at(0).toUpperCase()}${this.type.slice(1)} on ${months.at(
-            this.date.getMonth()
-        )} ${this.date.getDate()}`;
+            workoutDate.getMonth()
+        )} ${workoutDate.getDate()}`;
+    }
+
+    // Testing
+    click() {
+        this.clicks++;
+        console.log(this.clicks);
     }
 }
 
@@ -349,8 +431,8 @@ class Workout {
 class Running extends Workout {
     // Workout type running
     type = `running`;
-    constructor(coords, distance, duration, cadence) {
-        super(coords, distance, duration);
+    constructor(coords, distance, duration, cadence, id, date) {
+        super(coords, distance, duration, id, date);
         // Running workout cadence
         this.cadence = cadence;
         // Running workout pace
@@ -370,8 +452,8 @@ class Running extends Workout {
 class Cycling extends Workout {
     // Workout type cycling
     type = `cycling`;
-    constructor(coords, distance, duration, elevationGain) {
-        super(coords, distance, duration);
+    constructor(coords, distance, duration, elevationGain, id, date) {
+        super(coords, distance, duration, id, date);
         // Cycling workout elevation
         this.elevationGain = elevationGain;
         // Cycling workout speed
@@ -394,10 +476,10 @@ const app = new App();
 
 // EASY
 // 1) Edit a workout
-// 2) Delete a workout
-// 3) Delete all workouts
+// 2) Delete a workout   -
+// 3) Delete all workouts   -
 // 4) Sort all workouts by certain parameter
-// 5) Re-build workout objects from local storage
+// 5) Re-build workout objects from local storage  -
 // 6) More realistic error and confirmation messages
 
 // HARD
