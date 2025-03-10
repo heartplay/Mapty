@@ -328,6 +328,9 @@ class App {
             removedElements.forEach((el) => el.classList.add('workout--deleting'));
             btnDeleteAllWork.classList.add(`btn--delete-all-workouts--deleting`);
 
+            // Delete all workout markers on map
+            this.#markers.forEach((marker) => this.#map.removeLayer(marker));
+
             // Delete all workout markers from array
             this.#markers = [];
             // Delete all workouts
@@ -335,8 +338,6 @@ class App {
             // Delete local storage
             localStorage.removeItem(`workouts`);
 
-            // Delete all workout markers on map
-            this.#markers.forEach((marker) => this.#map.removeLayer(marker));
             setTimeout(() => {
                 // Delete all workout elements from list
                 removedElements.forEach((el) => el.remove());

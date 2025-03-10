@@ -111,6 +111,7 @@ a:visited {
         opacity: 0;
     }
 }
+
 @keyframes slideOutTop {
     from {
         transform: translateY(0);
