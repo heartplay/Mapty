@@ -311,17 +311,21 @@ class App {
     // Delete all workouts
     _deleteAllWorkouts() {
         if (confirm(`Are you sure you want to delete all workouts?`)) {
+            // Delete all workouts animation
+            const removedElements = containerWorkouts.querySelectorAll(`.workout`);
+            removedElements.forEach((el) => el.classList.add('workout--deleting'));
             // Delete all workout markers on map
             this.#markers.forEach((marker) => this.#map.removeLayer(marker));
-            // Delete all workout markers from array
-            this.#markers = [];
-            // Delete all workouts
-            this.#workouts = [];
-            // Delete local storage
-            localStorage.removeItem(`workouts`);
-            // Delete all workout elements from list
-            const removedElements = containerWorkouts.querySelectorAll(`.workout`);
-            removedElements.forEach((el) => el.remove());
+            setTimeout(() => {
+                // Delete all workout markers from array
+                this.#markers = [];
+                // Delete all workouts
+                this.#workouts = [];
+                // Delete local storage
+                localStorage.removeItem(`workouts`);
+                // Delete all workout elements from list
+                removedElements.forEach((el) => el.remove());
+            }, 500);
         }
     }
 
