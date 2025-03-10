@@ -22,6 +22,8 @@ class App {
     constructor() {
         // Get from local storage all workouts
         this._getLocalStorage();
+        // Show delete all workouts button if workouts array is not empty
+        if (this.#workouts.length) btnDeleteAllWork.classList.remove(`hidden`);
         // Get position
         this._getPosition();
         // Set event listeners
@@ -153,6 +155,9 @@ class App {
 
         // Set local storage for all workouts
         this._setLocalStorage();
+
+        // Show delete all workouts button if hidden
+        if (btnDeleteAllWork.classList.contains(`hidden`)) btnDeleteAllWork.classList.remove(`hidden`);
     }
 
     // Rendering workout marker on map
@@ -285,6 +290,9 @@ class App {
             // Set local storage for remaining workouts
             this._setLocalStorage();
 
+            // Hide delete all workouts button if no workouts
+            if (!this.#workouts.length) btnDeleteAllWork.classList.add(`hidden`);
+
             // End of animation for deleted workout siblings
             if (siblings) {
                 siblings.forEach((sibling) => {
@@ -314,6 +322,7 @@ class App {
             // Delete all workouts animation
             const removedElements = containerWorkouts.querySelectorAll(`.workout`);
             removedElements.forEach((el) => el.classList.add('workout--deleting'));
+
             // Delete all workout markers on map
             this.#markers.forEach((marker) => this.#map.removeLayer(marker));
             setTimeout(() => {
@@ -325,6 +334,8 @@ class App {
                 localStorage.removeItem(`workouts`);
                 // Delete all workout elements from list
                 removedElements.forEach((el) => el.remove());
+                // Hide delete all button
+                btnDeleteAllWork.classList.add(`hidden`);
             }, 500);
         }
     }
@@ -354,6 +365,8 @@ class App {
 
         // Guard clause
         if (!data) return;
+
+        // Re-create workout objects
         this._recreateWorkouts(data);
 
         // Render all workouts from local storage in list

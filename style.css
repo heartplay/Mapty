@@ -76,6 +76,10 @@ a:visited {
     background: none;
 }
 
+.hidden {
+    display: none;
+}
+
 .workouts::-webkit-scrollbar {
     width: 0;
 }
