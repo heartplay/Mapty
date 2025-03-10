@@ -244,55 +244,6 @@ class App {
 
     // Delete workout from list, locale storage, array and delete workout marker from map and array
     _deleteWorkout(targetElement, workout) {
-        // const workInd = this.#workouts.indexOf(workout);
-        // const workMark = this.#markers.find((mark) => {
-        //     const { lat, lng } = mark._latlng;
-        //     if (lat == workout.coords[0] && lng == workout.coords[1]) return mark;
-        // });
-        // const workMarkInd = this.#markers.indexOf(workMark);
-
-        // const height = Number.parseFloat(getComputedStyle(targetElement).getPropertyValue(`margin-bottom`));
-
-        // // targetElement.classList.add('workout--deleting');
-
-        // const deletedHeight = targetElement.offsetHeight + height;
-
-        // const siblingsArr = [];
-        // let sibling = targetElement.nextElementSibling;
-        // // console.log(sibling);
-        // // console.log(sibling.classList.contains(`workout`));
-        // siblingsArr.push(sibling);
-        // while (sibling) {
-        //     sibling = sibling.nextElementSibling;
-        //     if (sibling) siblingsArr.push(sibling);
-        // }
-
-        // if (siblingsArr) {
-        //     siblingsArr.forEach((sib) => {
-        //         sib.style.transform = `translateY(-${deletedHeight}px)`;
-        //         sib.classList.add('workout--shifting');
-        //     });
-        // }
-        // // siblingsArr.forEach((sib) => sib.classList.add('workout--shifting'));
-
-        // // const nextSiblings = Array.from(targetElement.nextElementSibling);
-        // // nextSiblings.forEach((sibling) => sibling.classList.add('workout--shifting'));
-
-        // setTimeout(() => {
-        //     targetElement.remove();
-        //     this.#workouts.splice(workInd, 1);
-        //     this.#map.removeLayer(workMark);
-        //     this.#markers.splice(workMarkInd, 1);
-        //     this._setLocalStorage();
-
-        //     siblingsArr.forEach((sib) => {
-        //         sib.style.transform = '';
-        //         sib.classList.remove('workout--shifting');
-        //     });
-        // }, 500);
-
-        ////////////////////////////////////////////////////////////
-
         // Find index of workout
         const workInd = this.#workouts.indexOf(workout);
         // Find workout marker on map
@@ -303,16 +254,75 @@ class App {
         // Find index of workout marker
         const workMarkInd = this.#markers.indexOf(workMark);
 
-        // Delete workout element in list
-        targetElement.remove();
-        // Delete workout from array
-        this.#workouts.splice(workInd, 1);
-        // Delete workout marker from map
-        this.#map.removeLayer(workMark);
-        // Delete workout marker from array
-        this.#markers.splice(workMarkInd, 1);
-        // Set local storage for remaining workouts
-        this._setLocalStorage();
+        // Find all next siblings of deleted workout
+        const siblings = this._getWorkoutNextSiblings(targetElement);
+        // Delete workout animation
+        targetElement.classList.add('workout--deleting');
+        // Deleted workout next siblings animation
+        if (siblings) {
+            // Calc offset for animation
+            const margin = Number.parseFloat(getComputedStyle(targetElement).marginBottom);
+            const offset = targetElement.offsetHeight + margin;
+            // Animation for each deleted element sibling
+            siblings.forEach((sibling) => {
+                // Reposition
+                sibling.style.transform = `translateY(-${offset}px)`;
+                // Add class for animation
+                sibling.classList.add('workout--shifting');
+            });
+        }
+
+        // Delete workout after delete animation
+        setTimeout(() => {
+            // Delete workout element in list
+            targetElement.remove();
+            // Delete workout from array
+            this.#workouts.splice(workInd, 1);
+            // Delete workout marker from map
+            this.#map.removeLayer(workMark);
+            // Delete workout marker from array
+            this.#markers.splice(workMarkInd, 1);
+            // Set local storage for remaining workouts
+            this._setLocalStorage();
+
+            // End of animation for deleted workout siblings
+            if (siblings) {
+                siblings.forEach((sibling) => {
+                    sibling.style.transform = '';
+                    sibling.classList.remove('workout--shifting');
+                });
+            }
+        }, 500);
+    }
+
+    _getWorkoutNextSiblings(targetElement) {
+        const nextSibling = targetElement.nextElementSibling;
+        if (!nextSibling) return null;
+        let nextSiblings = [...containerWorkouts.querySelectorAll(`.workout`)].reduce(
+            (acc, el) => {
+                if (el == acc.at(-1).nextElementSibling) acc.push(el);
+                return acc;
+            },
+            [nextSibling]
+        );
+        return nextSiblings;
+    }
+
+    // Delete all workouts
+    _deleteAllWorkouts() {
+        if (confirm(`Are you sure you want to delete all workouts?`)) {
+            // Delete all workout markers on map
+            this.#markers.forEach((marker) => this.#map.removeLayer(marker));
+            // Delete all workout markers from array
+            this.#markers = [];
+            // Delete all workouts
+            this.#workouts = [];
+            // Delete local storage
+            localStorage.removeItem(`workouts`);
+            // Delete all workout elements from list
+            const removedElements = containerWorkouts.querySelectorAll(`.workout`);
+            removedElements.forEach((el) => el.remove());
+        }
     }
 
     // Focusing on clicked workout in list
@@ -346,23 +356,6 @@ class App {
         this.#workouts.forEach((workout) => {
             this._renderWorkout(workout);
         });
-    }
-
-    // Delete all workouts
-    _deleteAllWorkouts() {
-        if (confirm(`Are you sure you want to delete all workouts?`)) {
-            // Delete all workout markers on map
-            this.#markers.forEach((marker) => this.#map.removeLayer(marker));
-            // Delete all workout markers from array
-            this.#markers = [];
-            // Delete all workouts
-            this.#workouts = [];
-            // Delete local storage
-            localStorage.removeItem(`workouts`);
-            // Delete all workout elements from list
-            const removedElements = containerWorkouts.querySelectorAll(`.workout`);
-            removedElements.forEach((el) => el.remove());
-        }
     }
 
     // Re-creating workout objects from local storage
