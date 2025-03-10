@@ -258,11 +258,22 @@ class App {
         });
         // Find index of workout marker
         const workMarkInd = this.#markers.indexOf(workMark);
-
         // Find all next siblings of deleted workout
         const siblings = this._getWorkoutNextSiblings(targetElement);
+
+        // Delete workout from array
+        this.#workouts.splice(workInd, 1);
+        // Delete workout marker from map
+        this.#map.removeLayer(workMark);
+        // Delete workout marker from array
+        this.#markers.splice(workMarkInd, 1);
+        // Set local storage for remaining workouts
+        this._setLocalStorage();
+
         // Delete workout animation
         targetElement.classList.add('workout--deleting');
+        // Animate hiding delete all workouts button
+        if (!this.#workouts.length) btnDeleteAllWork.classList.add(`btn--delete-all-workouts--deleting`);
         // Deleted workout next siblings animation
         if (siblings) {
             // Calc offset for animation
@@ -281,18 +292,11 @@ class App {
         setTimeout(() => {
             // Delete workout element in list
             targetElement.remove();
-            // Delete workout from array
-            this.#workouts.splice(workInd, 1);
-            // Delete workout marker from map
-            this.#map.removeLayer(workMark);
-            // Delete workout marker from array
-            this.#markers.splice(workMarkInd, 1);
-            // Set local storage for remaining workouts
-            this._setLocalStorage();
-
             // Hide delete all workouts button if no workouts
-            if (!this.#workouts.length) btnDeleteAllWork.classList.add(`hidden`);
-
+            if (!this.#workouts.length) {
+                btnDeleteAllWork.classList.remove(`btn--delete-all-workouts--deleting`);
+                btnDeleteAllWork.classList.add(`hidden`);
+            }
             // End of animation for deleted workout siblings
             if (siblings) {
                 siblings.forEach((sibling) => {
@@ -322,19 +326,22 @@ class App {
             // Delete all workouts animation
             const removedElements = containerWorkouts.querySelectorAll(`.workout`);
             removedElements.forEach((el) => el.classList.add('workout--deleting'));
+            btnDeleteAllWork.classList.add(`btn--delete-all-workouts--deleting`);
+
+            // Delete all workout markers from array
+            this.#markers = [];
+            // Delete all workouts
+            this.#workouts = [];
+            // Delete local storage
+            localStorage.removeItem(`workouts`);
 
             // Delete all workout markers on map
             this.#markers.forEach((marker) => this.#map.removeLayer(marker));
             setTimeout(() => {
-                // Delete all workout markers from array
-                this.#markers = [];
-                // Delete all workouts
-                this.#workouts = [];
-                // Delete local storage
-                localStorage.removeItem(`workouts`);
                 // Delete all workout elements from list
                 removedElements.forEach((el) => el.remove());
                 // Hide delete all button
+                btnDeleteAllWork.classList.remove(`btn--delete-all-workouts--deleting`);
                 btnDeleteAllWork.classList.add(`hidden`);
             }, 500);
         }

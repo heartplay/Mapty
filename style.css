@@ -111,6 +111,16 @@ a:visited {
         opacity: 0;
     }
 }
+@keyframes slideOutTop {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+}
 
 /* @keyframes slideUp {
     from {
@@ -120,6 +130,10 @@ a:visited {
         transform: translateY(-100%);
     }
 } */
+
+.btn--delete-all-workouts--deleting {
+    animation: slideOutTop 0.5s ease forwards;
+}
 
 .workout--deleting {
     animation: slideOutLeft 0.5s ease forwards;
