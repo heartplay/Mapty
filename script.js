@@ -122,6 +122,7 @@ class App {
             targetElement.classList.toggle(`workout--cycling`);
             targetElement.innerHTML = ``;
             this._closeModal();
+            this._recreateWorkout(workout);
         });
     }
 
@@ -527,6 +528,34 @@ class App {
             // Add workout object to workout array
             this.#workouts.push(workout);
         });
+    }
+
+    _recreateWorkout(workout) {
+        console.log(`recreate`);
+
+        if (workout.type == `cycling`) {
+            workout = new Running(
+                workout.coords,
+                workout.distance,
+                workout.duration,
+                workout.cadence,
+                workout.id,
+                workout.date
+            );
+        }
+
+        if (workout.type == `running`) {
+            workout = new Cycling(
+                workout.coords,
+                workout.distance,
+                workout.duration,
+                workout.workoutevationGain,
+                workout.id,
+                workout.date
+            );
+        }
+
+        console.log(workout);
     }
 
     // Delete local storage for workouts
