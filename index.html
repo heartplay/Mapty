@@ -36,7 +36,7 @@
             <button class="btn--delete-all-workouts hidden">&times;</button>
 
             <ul class="workouts">
-                <form class="form hidden">
+                <form class="form hidden" data-workout="inputs">
                     <div class="form__row">
                         <label class="form__label">Type</label>
                         <select class="form__input form__input--type">
@@ -72,5 +72,58 @@
         </div>
 
         <div id="map"></div>
+
+        <div class="modal hidden">
+            <button class="btn--close-modal">&times;</button>
+            <h2 class="modal__header">Edit your workout</h2>
+            <form class="modal__form" data-workout="inputs">
+                <div class="form__row">
+                    <label class="form__label">Type</label>
+                    <select class="form__input form__input--type">
+                        <option value="running">Running</option>
+                        <option value="cycling">Cycling</option>
+                    </select>
+                </div>
+                <div class="form__row">
+                    <label class="form__label">Distance</label>
+                    <input class="form__input form__input--distance" placeholder="km" />
+                </div>
+                <div class="form__row">
+                    <label class="form__label">Duration</label>
+                    <input class="form__input form__input--duration" placeholder="min" />
+                </div>
+                <div class="form__row">
+                    <label class="form__label">Cadence</label>
+                    <input class="form__input form__input--cadence" placeholder="step/min" />
+                </div>
+                <div class="form__row form__row--hidden">
+                    <label class="form__label">Elev Gain</label>
+                    <input class="form__input form__input--elevation" placeholder="meters" />
+                </div>
+                <button class="btn--edit-save">Save &rarr;</button>
+            </form>
+        </div>
+        <!-- <div class="modal">
+            <button class="btn--close-modal">&times;</button>
+            <h2 class="modal__header">Edit your workout</h2>
+            <form class="modal__form">
+                <label>Type</label>
+                <select class="form__input form__input--type">
+                    <option value="running">Running</option>
+                    <option value="cycling">Cycling</option>
+                </select>
+                <label>Distance</label>
+                <input type="text" />
+                <label>Duration</label>
+                <input type="text" />
+                <label>Cadence</label>
+                <input type="text" />
+                <label>Elev Gain</label>
+                <input type="text" />
+
+                <button class="btn">Save &rarr;</button>
+            </form>
+        </div> -->
+        <div class="overlay hidden"></div>
     </body>
 </html>
