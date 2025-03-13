@@ -159,6 +159,8 @@ class App {
         const index = this.#workouts.findIndex((el) => el.id == this.#targetWorkout.id);
         this.#workouts.splice(index, 1, newWorkout);
         this._setLocalStorage();
+
+        this.#targetWorkout = null;
     }
 
     _modalClickHandler(e) {
@@ -235,7 +237,10 @@ class App {
         inputCadence.closest(`.form__row`).classList.toggle(`form__row--hidden`);
         inputElevation.closest(`.form__row`).classList.toggle(`form__row--hidden`);
 
-        inputCadence.value = inputElevation.value = ``;
+        if (this.#targetWorkout) {
+            if (this.#targetWorkout.type == `running`) inputCadence.value = this.#targetWorkout.cadence;
+            if (this.#targetWorkout.type == `cycling`) inputElevation.value = this.#targetWorkout.elevationGain;
+        } else inputCadence.value = inputElevation.value = ``;
 
         targetElement.querySelector(`.form__input--distance`).focus();
     }
