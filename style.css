@@ -34,24 +34,6 @@ body {
     display: flex;
 }
 
-.hidden {
-    display: none;
-    opacity: 0;
-}
-
-.modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    max-width: 60rem;
-    background-color: var(--color-dark--1);
-    padding: 5rem 6rem;
-    box-shadow: 0 4rem 6rem rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-    transition: all 0.5s;
-}
-
 .overlay {
     position: fixed;
     top: 0;
@@ -64,49 +46,9 @@ body {
     transition: all 0.5s;
 }
 
-.modal__header {
-    font-size: 3.25rem;
-    margin-bottom: 4.5rem;
-    line-height: 1.5;
-    justify-self: center;
-}
-
-.modal__form {
-    margin: 0 3rem;
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    align-items: center;
-    gap: 2.5rem;
-}
-
-.modal__form label {
-    font-size: 1.5rem;
-    font-weight: 500;
-}
-
-.modal__form input {
-    font-size: 1.2rem;
-    padding: 1rem 1.5rem;
-    border: 1px solid #ddd;
-    border-radius: 0.5rem;
-}
-
-.modal__form button {
-    grid-column: 1 / span 2;
-    justify-self: center;
-    margin-top: 1rem;
-}
-
-.btn--close-modal {
-    font-family: inherit;
-    color: inherit;
-    position: absolute;
-    top: 0.5rem;
-    right: 2rem;
-    font-size: 4rem;
-    cursor: pointer;
-    border: none;
-    background: none;
+.hidden {
+    display: none;
+    opacity: 0;
 }
 
 /* GENERAL */
@@ -115,91 +57,7 @@ a:visited {
     color: var(--color-brand--1);
 }
 
-/* SIDEBAR */
-.sidebar {
-    flex-basis: 50rem;
-    background-color: var(--color-dark--1);
-    padding: 3rem 5rem 4rem 5rem;
-    display: flex;
-    flex-direction: column;
-}
-
-.logo {
-    height: 5.2rem;
-    align-self: center;
-    margin-bottom: 4rem;
-}
-
-.workouts {
-    list-style: none;
-    height: 77vh;
-    overflow-y: scroll;
-    overflow-x: hidden;
-
-    /* position: relative; */
-}
-
-/* .btn--edit-workout {
-    background-color: #4caf50; 
-    border: none;
-    color: white;
-    padding: 5px 10px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin-right: 5px;
-    cursor: pointer;
-    border-radius: 5px;
-} */
-
-.btn--edit-workout {
-    font-family: inherit; /* Наследуем шрифт */
-    color: inherit; /* Наследуем цвет текста */
-    position: absolute; /* Абсолютное позиционирование */
-    top: 0.6rem; /* Выравниваем по вертикали */
-    right: 3.5rem; /* Сдвигаем влево от кнопки удаления */
-    font-size: 1.2rem; /* Размер шрифта как у кнопки удаления */
-    cursor: pointer; /* Курсор при наведении */
-    border: none; /* Убираем границу */
-    background: none; /* Прозрачный фон */
-    padding: 0; /* Убираем внутренние отступы */
-    margin: 0; /* Убираем внешние отступы */
-}
-
-.btn--delete-workout {
-    font-family: inherit;
-    color: inherit;
-    position: absolute;
-    top: 0.1rem;
-    right: 1rem;
-    font-size: 2rem;
-    cursor: pointer;
-    border: none;
-    background: none;
-}
-
-.workouts::-webkit-scrollbar {
-    width: 0;
-}
-
-.workout {
-    background-color: var(--color-dark--2);
-    border-radius: 5px;
-    padding: 1.5rem 2.25rem;
-    margin-bottom: 1.75rem;
-    /* cursor: pointer; */
-
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    gap: 0.75rem 1.5rem;
-
-    position: relative;
-
-    /* transition: all 0.5s, transform 1ms;
-    transform: translateY(-30rem); */
-}
-/* ----------------------------------------------------------- */
+/* ANIMATIONS */
 @keyframes slideOutLeft {
     from {
         transform: translateX(0);
@@ -222,17 +80,60 @@ a:visited {
     }
 }
 
-/* @keyframes slideUp {
-    from {
-        transform: translateY(0);
-    }
-    to {
-        transform: translateY(-100%);
-    }
-} */
+/* SIDEBAR */
+.sidebar {
+    flex-basis: 50rem;
+    background-color: var(--color-dark--1);
+    padding: 3rem 5rem 4rem 5rem;
+    display: flex;
+    flex-direction: column;
+}
 
-.btn--delete-all-workouts--deleting {
-    animation: slideOutTop 0.5s ease forwards;
+.logo {
+    height: 5.2rem;
+    align-self: center;
+    margin-bottom: 4rem;
+}
+
+.copyright {
+    margin-top: auto;
+    font-size: 1.3rem;
+    text-align: center;
+    color: var(--color-light--1);
+}
+
+.twitter-link:link,
+.twitter-link:visited {
+    color: var(--color-light--1);
+    transition: all 0.2s;
+}
+
+.twitter-link:hover,
+.twitter-link:active {
+    color: var(--color-light--2);
+}
+
+/* WORKOUTS */
+.workouts {
+    list-style: none;
+    height: 77vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.workouts::-webkit-scrollbar {
+    width: 0;
+}
+
+.workout {
+    background-color: var(--color-dark--2);
+    border-radius: 5px;
+    padding: 1.5rem 2.25rem;
+    margin-bottom: 1.75rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 0.75rem 1.5rem;
+    position: relative;
 }
 
 .workout--deleting {
@@ -243,13 +144,10 @@ a:visited {
     transition: transform 0.5s ease;
 }
 
-/* .workout--shifting {
-    animation: slideUp 0.5s ease forwards;
-} */
-/* ------------------------------------------------------- */
 .workout--running {
     border-left: 5px solid var(--color-brand--2);
 }
+
 .workout--cycling {
     border-left: 5px solid var(--color-brand--1);
 }
@@ -283,6 +181,37 @@ a:visited {
     font-weight: 800;
 }
 
+.btn--edit-workout {
+    font-family: inherit;
+    color: inherit;
+    position: absolute;
+    top: 0.6rem;
+    right: 3.5rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+    margin: 0;
+}
+
+.btn--delete-workout {
+    font-family: inherit;
+    color: inherit;
+    position: absolute;
+    top: 0.1rem;
+    right: 1rem;
+    font-size: 2rem;
+    cursor: pointer;
+    border: none;
+    background: none;
+}
+
+.btn--delete-all-workouts--deleting {
+    animation: slideOutTop 0.5s ease forwards;
+}
+
+/* NEW WORKOUT FORM */
 .form {
     background-color: var(--color-dark--2);
     border-radius: 5px;
@@ -341,22 +270,63 @@ a:visited {
     display: none;
 }
 
-.copyright {
-    margin-top: auto;
-    font-size: 1.3rem;
-    text-align: center;
-    color: var(--color-light--1);
+/* EDIT WORKOUT FORM */
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 60rem;
+    background-color: var(--color-dark--1);
+    padding: 5rem 6rem;
+    box-shadow: 0 4rem 6rem rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    transition: all 0.5s;
 }
 
-.twitter-link:link,
-.twitter-link:visited {
-    color: var(--color-light--1);
-    transition: all 0.2s;
+.modal__header {
+    font-size: 3.25rem;
+    margin-bottom: 4.5rem;
+    line-height: 1.5;
+    justify-self: center;
 }
 
-.twitter-link:hover,
-.twitter-link:active {
-    color: var(--color-light--2);
+.modal__form {
+    margin: 0 3rem;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    align-items: center;
+    gap: 2.5rem;
+}
+
+.modal__form label {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.modal__form input {
+    font-size: 1.2rem;
+    padding: 1rem 1.5rem;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+}
+
+.modal__form button {
+    grid-column: 1 / span 2;
+    justify-self: center;
+    margin-top: 1rem;
+}
+
+.btn--close-modal {
+    font-family: inherit;
+    color: inherit;
+    position: absolute;
+    top: 0.5rem;
+    right: 2rem;
+    font-size: 4rem;
+    cursor: pointer;
+    border: none;
+    background: none;
 }
 
 /* MAP */
@@ -385,6 +355,7 @@ a:visited {
 .running-popup .leaflet-popup-content-wrapper {
     border-left: 5px solid var(--color-brand--2);
 }
+
 .cycling-popup .leaflet-popup-content-wrapper {
     border-left: 5px solid var(--color-brand--1);
 }
