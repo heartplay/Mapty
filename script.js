@@ -20,6 +20,10 @@ const inputDurationModal = modal.querySelector('.form__input--duration');
 const inputCadenceModal = modal.querySelector('.form__input--cadence');
 const inputElevationModal = modal.querySelector('.form__input--elevation');
 
+const sortForm = document.querySelector(`.filter-sort`);
+const selectType = sortForm.querySelector(`.filter-sort__select--type`);
+const selectSort = sortForm.querySelector(`.filter-sort__select--sort`);
+
 class App {
     // Loaded leaflet map
     #map;
@@ -216,6 +220,11 @@ class App {
         // Add new object to workout array
         this.#workouts.push(workout);
 
+        /////////////////////
+        // Show sort workouts form if hidden
+        if (this.#workouts.length > 1 && sortForm.classList.contains(`hidden`)) this._showSort();
+        /////////////////////
+
         // Render workout on map as marker
         this._renderWorkoutMarker(workout);
 
@@ -337,6 +346,8 @@ class App {
 
     ///////////////////////////////////////////// DELETE WORKOUT
 
+    _showDeleteAll() {}
+
     // Delete workout from list, locale storage, array and delete workout marker from map and array
     _deleteWorkout() {
         // Find index of workout
@@ -392,6 +403,12 @@ class App {
                 btnDeleteAllWork.classList.remove(`btn--delete-all-workouts--deleting`);
                 btnDeleteAllWork.classList.add(`hidden`);
             }
+
+            /////////////////////
+            // Hide sort workouts form if one workout left
+            if (this.#workouts.length < 2) this._hideSort();
+            /////////////////////
+
             // End of animation for deleted workout siblings
             if (siblings) {
                 siblings.forEach((sibling) => {
@@ -420,6 +437,11 @@ class App {
             // Delete local storage
             localStorage.removeItem(`workouts`);
 
+            /////////////////////
+            // Hide sort workouts form
+            this._hideSort();
+            /////////////////////
+
             setTimeout(() => {
                 // Delete all workout elements from list
                 removedElements.forEach((el) => el.remove());
@@ -445,7 +467,19 @@ class App {
         this.#markers.splice(workMarkInd, 1);
     }
 
+    _hideDeleteAll() {}
+
     ///////////////////////////////////////////// SORT WORKOUT
+
+    // Show sort workouts form
+    _showSort() {
+        sortForm.classList.remove(`hidden`);
+    }
+
+    // Hide sort workouts form
+    _hideSort() {
+        sortForm.classList.add(`hidden`);
+    }
 
     ///////////////////////////////////////////// RENDER WORKOUT
 
@@ -596,6 +630,9 @@ class App {
 
         // Show delete all workouts button
         btnDeleteAllWork.classList.remove(`hidden`);
+
+        // Show sort workouts form
+        if (this.#workouts.length > 1) this._showSort();
     }
 
     ///////////////////////////////////////////// HANDLER METHODS
