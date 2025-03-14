@@ -63,6 +63,9 @@ class App {
             if (e.key == `Escape`) this._hideForm();
         });
 
+        // Click handler for document
+        document.addEventListener(`click`, this._documentClickHandler.bind(this));
+
         // Click handler for editing workout form
         modal.addEventListener(`click`, this._modalClickHandler.bind(this));
 
@@ -123,7 +126,7 @@ class App {
 
     ///////////////////////////////////////////// CLICK HANDLERS
 
-    // Handler for workout container
+    // Handler click for workout container
     _workClickHandler(e) {
         // Select clicked element
         this.#targetWorkoutElement = e.target.closest(`.workout`);
@@ -142,8 +145,6 @@ class App {
 
         // If edit buttom is clicked
         if (e.target.classList.contains(`btn--edit-workout`)) {
-            // Hide creating new workout form
-            this._hideForm();
             // Show editing workout form
             this._openModal();
             return;
@@ -151,9 +152,15 @@ class App {
 
         // Focusing map view on workout marker
         this._moveToWorkout();
+
+        // Delete current workout
+        this.#targetWorkout = null;
+
+        // Delete current workout element
+        this.#targetWorkoutElement = null;
     }
 
-    // Handler for editing workout form
+    // Handler click for editing workout form
     _modalClickHandler(e) {
         e.preventDefault();
         // If close button is clicked
@@ -162,6 +169,12 @@ class App {
             this._hideModal();
         }
         // if (e.target.classList.contains(`btn--edit-save`)) {}
+    }
+
+    // Handler for document
+    _documentClickHandler(e) {
+        // Hide create workout form if click not on form and map
+        if (!(form.contains(e.target) || e.target.closest(`#map`))) this._hideForm();
     }
 
     ///////////////////////////////////////////// CREATE WORKOUT
