@@ -33,6 +33,23 @@
         <div class="sidebar">
             <img src="logo.png" alt="Logo" class="logo" />
 
+            <div class="filter-sort">
+                <span class="filter-sort__text">Show</span>
+                <select class="filter-sort__select filter-sort__select--type">
+                    <option value="all">all</option>
+                    <option value="running">running</option>
+                    <option value="cycling">cycling</option>
+                </select>
+                <span class="filter-sort__text">workouts sorted by</span>
+                <select class="filter-sort__select filter-sort__select--sort">
+                    <option value="date">date</option>
+                    <option value="distance">distance</option>
+                    <option value="duration">duration</option>
+                    <option value="cadence">cadence</option>
+                    <option value="elevation">elevation</option>
+                </select>
+            </div>
+
             <button class="btn--delete-all-workouts hidden">&times;</button>
 
             <ul class="workouts">

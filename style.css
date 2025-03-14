@@ -320,6 +320,76 @@ a:visited {
     /* margin-top: 1rem; */
 }
 
+/* SORT */
+/* .filter-sort {
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.filter,
+.sort {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.filter__label,
+.sort__label {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-light--2);
+}
+
+.filter__select,
+.sort__select {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    font-family: inherit;
+    font-size: 1.4rem;
+    border: none;
+    border-radius: 3px;
+    background-color: var(--color-light--3);
+    color: var(--color-dark--1);
+    transition: all 0.2s;
+}
+
+.filter__select:focus,
+.sort__select:focus {
+    outline: none;
+    background-color: #fff;
+} */
+.filter-sort {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+    color: var(--color-light--2);
+}
+
+.filter-sort__text {
+    font-weight: 600;
+}
+
+.filter-sort__select {
+    padding: 0.3rem 0.8rem;
+    font-family: inherit;
+    font-size: 1.4rem;
+    border: none;
+    border-radius: 3px;
+    background-color: var(--color-light--3);
+    color: var(--color-dark--1);
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.filter-sort__select:focus {
+    outline: none;
+    background-color: #fff;
+}
+
 /* MAP */
 #map {
     flex: 1;
