@@ -48,6 +48,12 @@ class App {
         this._getPosition();
 
         // Set event listeners
+        // Sort
+        selectType.addEventListener(`change`, this._selectTypeWorkouts.bind(this));
+        selectSort.addEventListener(`change`, this._renderSortedWorkouts.bind(this));
+
+        // selectSort.addEventListener(`change`, (e) => this._renderSortedWorkouts(e));
+
         // Event listener for submit on input form
         form.addEventListener(`submit`, this._newWorkout.bind(this));
 
@@ -110,10 +116,13 @@ class App {
         }).addTo(this.#map);
         // Leaflet event listener method for click on map
         this.#map.on(`click`, this._showForm.bind(this));
+
         // Render all workout markers from local storage
-        this.#workouts.forEach((workout) => {
-            this._renderWorkoutMarker(workout);
-        });
+        // this.#workouts.forEach((workout) => {
+        //     this._renderWorkoutMarker(workout);
+        // });
+
+        if (this.#workouts.length) this._showSort();
     }
 
     _moveToWorkout() {
@@ -220,16 +229,15 @@ class App {
         // Add new object to workout array
         this.#workouts.push(workout);
 
-        /////////////////////
-        // Show sort workouts form if hidden
-        if (this.#workouts.length > 1 && sortForm.classList.contains(`hidden`)) this._showSort();
-        /////////////////////
+        // this._initSort();
 
         // Render workout on map as marker
         this._renderWorkoutMarker(workout);
 
-        // Render workout on list
-        this._renderWorkout(workout);
+        // // Render workout on list
+        // this._renderWorkout(workout);
+
+        this._showSort();
 
         // Hide form, clear inputs
         this._hideForm();
@@ -237,8 +245,9 @@ class App {
         // Set local storage for all workouts
         this._setLocalStorage();
 
-        // Show delete all workouts button if hidden
-        if (btnDeleteAllWork.classList.contains(`hidden`)) btnDeleteAllWork.classList.remove(`hidden`);
+        // // Show delete all workouts button if hidden
+        // if (btnDeleteAllWork.classList.contains(`hidden`)) btnDeleteAllWork.classList.remove(`hidden`);
+        if (btnDeleteAllWork.classList.contains(`hidden`)) this._showDeleteAll();
     }
 
     // Hide create new workout form
@@ -346,7 +355,14 @@ class App {
 
     ///////////////////////////////////////////// DELETE WORKOUT
 
-    _showDeleteAll() {}
+    _showDeleteAll() {
+        btnDeleteAllWork.classList.remove(`hidden`);
+        btnDeleteAllWork.classList.add(`slide-in-top`);
+
+        setTimeout(() => {
+            btnDeleteAllWork.classList.remove(`slide-in-top`);
+        }, 500);
+    }
 
     // Delete workout from list, locale storage, array and delete workout marker from map and array
     _deleteWorkout() {
@@ -375,8 +391,12 @@ class App {
         if (!this.#workouts.length) {
             // Delete local storage
             localStorage.removeItem(`workouts`);
-            // Animate hiding delete all workouts button
-            btnDeleteAllWork.classList.add(`btn--delete-all-workouts--deleting`);
+            // // Animate hiding delete all workouts button
+            // btnDeleteAllWork.classList.add(`btn--delete-all-workouts--deleting`);
+
+            this._hideDeleteAll();
+
+            this._hideSort();
         }
         // Deleted workout next siblings animation
         if (siblings) {
@@ -398,15 +418,10 @@ class App {
             this.#targetWorkoutElement.remove();
             // Delete current workout element
             this.#targetWorkoutElement = null;
-            // Hide delete all workouts button if no workouts
-            if (!this.#workouts.length) {
-                btnDeleteAllWork.classList.remove(`btn--delete-all-workouts--deleting`);
-                btnDeleteAllWork.classList.add(`hidden`);
-            }
 
             /////////////////////
-            // Hide sort workouts form if one workout left
-            if (this.#workouts.length < 2) this._hideSort();
+            // // Hide sort workouts form if one workout left
+            // if (this.#workouts.length < 2) this._hideSort();
             /////////////////////
 
             // End of animation for deleted workout siblings
@@ -425,7 +440,6 @@ class App {
             // Delete all workouts animation
             const removedElements = containerWorkouts.querySelectorAll(`.workout`);
             removedElements.forEach((el) => el.classList.add('workout--deleting'));
-            btnDeleteAllWork.classList.add(`btn--delete-all-workouts--deleting`);
 
             // Delete all workout markers on map
             this.#markers.forEach((marker) => this.#map.removeLayer(marker));
@@ -437,6 +451,9 @@ class App {
             // Delete local storage
             localStorage.removeItem(`workouts`);
 
+            // Hide delete all button
+            this._hideDeleteAll();
+
             /////////////////////
             // Hide sort workouts form
             this._hideSort();
@@ -445,9 +462,6 @@ class App {
             setTimeout(() => {
                 // Delete all workout elements from list
                 removedElements.forEach((el) => el.remove());
-                // Hide delete all button
-                btnDeleteAllWork.classList.remove(`btn--delete-all-workouts--deleting`);
-                btnDeleteAllWork.classList.add(`hidden`);
             }, 500);
         }
     }
@@ -467,18 +481,101 @@ class App {
         this.#markers.splice(workMarkInd, 1);
     }
 
-    _hideDeleteAll() {}
+    _hideDeleteAll() {
+        btnDeleteAllWork.classList.add(`slide-out-top`);
+
+        setTimeout(() => {
+            btnDeleteAllWork.classList.add(`hidden`);
+            btnDeleteAllWork.classList.remove(`slide-out-top`);
+        }, 500);
+    }
 
     ///////////////////////////////////////////// SORT WORKOUT
 
     // Show sort workouts form
     _showSort() {
-        sortForm.classList.remove(`hidden`);
+        // sortForm.classList.remove(`hidden`);
+        // sortForm.classList.add(`slide-in-top`);
+
+        if (sortForm.classList.contains(`hidden`)) {
+            sortForm.classList.remove(`hidden`);
+            sortForm.classList.add(`slide-in-top`);
+
+            setTimeout(() => {
+                sortForm.classList.remove(`slide-in-top`);
+            }, 500);
+        }
+
+        this._initSort();
+        // this._selectSort();
+
+        // setTimeout(() => {
+        //     sortForm.classList.remove(`slide-in-top`);
+        // }, 500);
+    }
+
+    _initSort() {
+        selectType.value = `all`;
+        this._selectTypeWorkouts();
+    }
+
+    _selectTypeWorkouts() {
+        // const selectType = sortForm.querySelector(`.filter-sort__select--type`);
+        // const selectSort = sortForm.querySelector(`.filter-sort__select--sort`);
+
+        this._selectSort();
+    }
+
+    _selectSort() {
+        const sortOptions = {
+            all: [`date`, `distance`, `duration`],
+            running: [`date`, `distance`, `duration`, `cadence`],
+            cycling: [`date`, `distance`, `duration`, `elevation`],
+        };
+        const sortOption = sortOptions[selectType.value];
+
+        selectSort.innerHTML = ``;
+        sortOption.forEach((option) => {
+            const optionElement = document.createElement(`option`);
+            optionElement.value = option;
+            optionElement.textContent = option;
+            selectSort.append(optionElement);
+        });
+
+        this._renderSortedWorkouts();
+    }
+
+    _renderSortedWorkouts() {
+        const type = selectType.value;
+        const sort = selectSort.value;
+
+        containerWorkouts.querySelectorAll(`.workout`).forEach((workout) => workout.remove());
+        this.#markers.forEach((marker) => this.#map.removeLayer(marker));
+        this.#markers = [];
+
+        let sortedWorkouts;
+
+        if (type === `all`) sortedWorkouts = this.#workouts.slice();
+        else sortedWorkouts = this.#workouts.filter((workout) => workout.type == `${selectType.value}`);
+
+        if (sort === `date`) sortedWorkouts.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        else if (sort === `elevation`) sortedWorkouts.sort((a, b) => a.elevationGain - b.elevationGain);
+        else sortedWorkouts.sort((a, b) => a[sort] - b[sort]);
+
+        sortedWorkouts.forEach((workout) => {
+            this._renderWorkout(workout);
+            this._renderWorkoutMarker(workout);
+        });
     }
 
     // Hide sort workouts form
     _hideSort() {
-        sortForm.classList.add(`hidden`);
+        sortForm.classList.add(`slide-out-top`);
+
+        setTimeout(() => {
+            sortForm.classList.add(`hidden`);
+            sortForm.classList.remove(`slide-out-top`);
+        }, 500);
     }
 
     ///////////////////////////////////////////// RENDER WORKOUT
@@ -624,15 +721,17 @@ class App {
         this._recreateWorkouts(data);
 
         // Render all workouts from local storage in list
-        this.#workouts.forEach((workout) => {
-            this._renderWorkout(workout);
-        });
+        // this.#workouts.forEach((workout) => {
+        //     this._renderWorkout(workout);
+        // });
 
         // Show delete all workouts button
-        btnDeleteAllWork.classList.remove(`hidden`);
+        // btnDeleteAllWork.classList.remove(`hidden`);
+        this._showDeleteAll();
 
         // Show sort workouts form
-        if (this.#workouts.length > 1) this._showSort();
+        // if (this.#workouts.length > 1) this._showSort();
+        // this._showSort();
     }
 
     ///////////////////////////////////////////// HANDLER METHODS

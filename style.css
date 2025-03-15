@@ -80,6 +80,49 @@ a:visited {
     }
 }
 
+@keyframes slideInTop {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutTop {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(0);
+    }
+    to {
+        transform: translateY(-100%);
+    }
+}
+
+.slide-up {
+    animation: slideUp 0.5s ease forwards;
+}
+
+.slide-in-top {
+    animation: slideInTop 0.5s ease forwards;
+}
+
+.slide-out-top {
+    animation: slideOutTop 0.5s ease forwards;
+}
+
 /* SIDEBAR */
 .sidebar {
     flex-basis: 50rem;
@@ -121,9 +164,9 @@ a:visited {
     overflow-x: hidden;
 }
 
-.workouts::-webkit-scrollbar {
+/* .workouts::-webkit-scrollbar {
     width: 0;
-}
+} */
 
 .workout {
     background-color: var(--color-dark--2);
@@ -134,6 +177,8 @@ a:visited {
     grid-template-columns: 1fr 1fr 1fr 1fr;
     gap: 0.75rem 1.5rem;
     position: relative;
+
+    /* transition: transform 0.5s ease; */
 }
 
 .workout--deleting {
@@ -205,6 +250,10 @@ a:visited {
     cursor: pointer;
     border: none;
     background: none;
+}
+
+.btn--delete-all-workouts {
+    /* transition: transform 0.5s ease; */
 }
 
 .btn--delete-all-workouts--deleting {
@@ -317,7 +366,6 @@ a:visited {
     background-color: var(--color-dark--2);
     color: white;
     cursor: pointer;
-    /* margin-top: 1rem; */
 }
 
 /* SORT */
@@ -331,6 +379,7 @@ a:visited {
 
     transition: all 0.5s, transform 1ms;
 }
+
 .filter-sort.hidden {
     transform: translateY(-30rem);
     display: none;
