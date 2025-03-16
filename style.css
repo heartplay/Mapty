@@ -378,7 +378,7 @@ a:visited {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
     font-size: 1.5rem;
     color: var(--color-light--2);
     flex-wrap: nowrap;
@@ -429,6 +429,11 @@ a:visited {
 .filter-sort__icon-container:hover .filter-sort__icon {
     opacity: 0.8;
     cursor: pointer;
+}
+
+/* ERROR AND CONFIRMATION MESSAGE */
+
+.message {
 }
 
 /* MAP */

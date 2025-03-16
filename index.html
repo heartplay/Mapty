@@ -33,6 +33,7 @@
         <div class="sidebar">
             <img src="img/logo/logo.png" alt="Logo" class="logo" />
 
+            <!-- Sort workouts form -->
             <div class="filter-sort hidden">
                 <span class="filter-sort__text">Show</span>
                 <select class="filter-sort__select filter-sort__select--type">
@@ -47,9 +48,12 @@
                 </div>
             </div>
 
+            <!-- Delete all workouts button -->
             <button class="btn--delete-all-workouts hidden">&times;</button>
 
+            <!-- Workout list -->
             <ul class="workouts">
+                <!-- Create workout form -->
                 <form class="create hidden" data-workout="inputs">
                     <div class="form__row">
                         <label class="form__label">Type</label>
@@ -85,8 +89,10 @@
             </p>
         </div>
 
+        <!-- Map -->
         <div id="map"></div>
 
+        <!-- Edit workout form -->
         <div class="edit hidden">
             <button class="btn--close-edit">&times;</button>
             <h2 class="edit__header">Edit your workout</h2>
@@ -120,6 +126,10 @@
             </div>
         </div>
 
+        <!-- Overlay -->
         <div class="overlay hidden"></div>
+
+        <!-- Error and confirmation message -->
+        <div class="message hidden"></div>
     </body>
 </html>
