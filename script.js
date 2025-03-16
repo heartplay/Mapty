@@ -938,7 +938,7 @@ const app = new App();
 // 4) Sort all workouts by certain parameter  +
 // 5) Re-build workout objects from local storage  +
 // 6) More realistic error and confirmation messages
-// 7) Show/hide scroll bar for workout container
+// 7) Show/hide scroll bar for workout container  +
 // 8) Modal windows for error and confirmation messages
 // 9) Delete workout confirmation
 // 10) Delete all workouts button for sorted workouts by type

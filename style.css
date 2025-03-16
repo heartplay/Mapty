@@ -149,8 +149,29 @@ a:visited {
 .workouts {
     list-style: none;
     height: 77vh;
-    overflow-y: scroll;
+    /* overflow-y: scroll; */
+    overflow-y: auto;
     overflow-x: hidden;
+}
+
+/* Remove bottom margin of last workout element in list */
+.workouts .workout:last-child {
+    margin-bottom: 0;
+}
+
+/* Workout container scrollbar */
+.workouts::-webkit-scrollbar-track {
+    background-color: var(--color-light--1);
+}
+
+.workouts::-webkit-scrollbar-thumb {
+    background-color: var(--color-dark--1);
+    border-radius: 10px;
+    border: 2px solid var(--color-dark--2);
+}
+
+.workouts::-webkit-scrollbar {
+    width: 1.2rem;
 }
 
 .workout {
@@ -243,11 +264,6 @@ a:visited {
 .btn--delete-all-workouts--deleting {
     animation: slideOutTop 0.5s ease forwards;
 }
-
-/* Workout container scrollbar */
-/* .workouts::-webkit-scrollbar {
-    width: 0;
-} */
 
 /* NEW WORKOUT FORM */
 .form {
