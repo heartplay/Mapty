@@ -47,12 +47,16 @@ class App {
         // Get position
         this._getPosition();
 
-        // Set event listeners
-        // Sort
-        selectType.addEventListener(`change`, this._selectTypeWorkouts.bind(this));
-        selectSort.addEventListener(`change`, this._renderSortedWorkouts.bind(this));
+        // Show sort workouts form
+        if (this.#workouts.length) this._showSort();
 
-        // selectSort.addEventListener(`change`, (e) => this._renderSortedWorkouts(e));
+        ////////////////// Set event listeners
+
+        // Toggling parameters for sort workouts
+        // Sort by workout type
+        selectType.addEventListener(`change`, this._selectSort.bind(this));
+        // Sort workouts by certain parameter
+        selectSort.addEventListener(`change`, this._renderSortedWorkouts.bind(this));
 
         // Event listener for submit on input form
         form.addEventListener(`submit`, this._newWorkout.bind(this));
@@ -117,16 +121,12 @@ class App {
         // Leaflet event listener method for click on map
         this.#map.on(`click`, this._showForm.bind(this));
 
-        // Render all workout markers from local storage
-        // this.#workouts.forEach((workout) => {
-        //     this._renderWorkoutMarker(workout);
-        // });
-
-        if (this.#workouts.length) this._showSort();
+        // Render all workouts and workout markers sorted by default(all workouts sorted by date)
+        if (this.#workouts.length) this._renderDefaultSortWorkouts();
     }
 
+    // Focusing map view on workout marker
     _moveToWorkout() {
-        // Focusing map view on workout marker
         this.#map.setView(this.#targetWorkout.coords, this.#mapZoomLevel + 1, {
             animate: true, // Animation of focusing
             pan: {
@@ -229,15 +229,11 @@ class App {
         // Add new object to workout array
         this.#workouts.push(workout);
 
-        // this._initSort();
+        // Show sort workouts form
+        if (sortForm.classList.contains(`hidden`)) this._showSort();
 
-        // Render workout on map as marker
-        this._renderWorkoutMarker(workout);
-
-        // // Render workout on list
-        // this._renderWorkout(workout);
-
-        this._showSort();
+        // Render all workouts sorted by default(by date)
+        this._renderDefaultSortWorkouts();
 
         // Hide form, clear inputs
         this._hideForm();
@@ -245,8 +241,7 @@ class App {
         // Set local storage for all workouts
         this._setLocalStorage();
 
-        // // Show delete all workouts button if hidden
-        // if (btnDeleteAllWork.classList.contains(`hidden`)) btnDeleteAllWork.classList.remove(`hidden`);
+        // Show delete all workouts button if hidden
         if (btnDeleteAllWork.classList.contains(`hidden`)) this._showDeleteAll();
     }
 
@@ -320,13 +315,14 @@ class App {
 
         // Delete old workout marker
         this._deleteWorkoutMarker(this.#targetWorkout);
-        // Create new workout marker
-        this._renderWorkoutMarker(newWorkout);
 
-        // Re-rendering edited workout in list
-        const editedWorkout = this._createWorkoutElement(newWorkout);
-        // Replace edited workout element
-        this.#targetWorkoutElement.replaceWith(editedWorkout);
+        // // Create new workout marker
+        // this._renderWorkoutMarker(newWorkout);
+
+        // // Re-rendering edited workout in list
+        // const editedWorkout = this._createWorkoutElement(newWorkout);
+        // // Replace edited workout element
+        // this.#targetWorkoutElement.replaceWith(editedWorkout);
 
         // Find index of edited workout
         const index = this.#workouts.findIndex((el) => el.id == this.#targetWorkout.id);
@@ -336,6 +332,11 @@ class App {
 
         // Set local storage for all workouts
         this._setLocalStorage();
+
+        /////////////////
+        // Render all workouts sorted by default(by date)
+        this._renderDefaultSortWorkouts();
+        /////////////////
 
         // Hide edit workout form
         this._hideModal();
@@ -391,11 +392,11 @@ class App {
         if (!this.#workouts.length) {
             // Delete local storage
             localStorage.removeItem(`workouts`);
-            // // Animate hiding delete all workouts button
-            // btnDeleteAllWork.classList.add(`btn--delete-all-workouts--deleting`);
 
+            // Hide delete all workouts button
             this._hideDeleteAll();
 
+            // Hide sort workouts form
             this._hideSort();
         }
         // Deleted workout next siblings animation
@@ -418,11 +419,6 @@ class App {
             this.#targetWorkoutElement.remove();
             // Delete current workout element
             this.#targetWorkoutElement = null;
-
-            /////////////////////
-            // // Hide sort workouts form if one workout left
-            // if (this.#workouts.length < 2) this._hideSort();
-            /////////////////////
 
             // End of animation for deleted workout siblings
             if (siblings) {
@@ -454,11 +450,10 @@ class App {
             // Hide delete all button
             this._hideDeleteAll();
 
-            /////////////////////
             // Hide sort workouts form
             this._hideSort();
-            /////////////////////
 
+            // Delete workout elements after buttons hiding animation
             setTimeout(() => {
                 // Delete all workout elements from list
                 removedElements.forEach((el) => el.remove());
@@ -481,11 +476,15 @@ class App {
         this.#markers.splice(workMarkInd, 1);
     }
 
+    // Hide delete all workouts button
     _hideDeleteAll() {
+        // Hiding animation
         btnDeleteAllWork.classList.add(`slide-out-top`);
-
+        // Hide button after animation
         setTimeout(() => {
+            // Hide button
             btnDeleteAllWork.classList.add(`hidden`);
+            // Remove animation
             btnDeleteAllWork.classList.remove(`slide-out-top`);
         }, 500);
     }
@@ -494,47 +493,36 @@ class App {
 
     // Show sort workouts form
     _showSort() {
-        // sortForm.classList.remove(`hidden`);
-        // sortForm.classList.add(`slide-in-top`);
-
-        if (sortForm.classList.contains(`hidden`)) {
-            sortForm.classList.remove(`hidden`);
-            sortForm.classList.add(`slide-in-top`);
-
-            setTimeout(() => {
-                sortForm.classList.remove(`slide-in-top`);
-            }, 500);
-        }
-
-        this._initSort();
-        // this._selectSort();
-
-        // setTimeout(() => {
-        //     sortForm.classList.remove(`slide-in-top`);
-        // }, 500);
+        // Show form
+        sortForm.classList.remove(`hidden`);
+        // Showing animation
+        sortForm.classList.add(`slide-in-top`);
+        // Remove animation after showing
+        setTimeout(() => {
+            sortForm.classList.remove(`slide-in-top`);
+        }, 500);
     }
 
-    _initSort() {
+    // Render all workouts and workout markers sorted by date
+    _renderDefaultSortWorkouts() {
         selectType.value = `all`;
-        this._selectTypeWorkouts();
-    }
-
-    _selectTypeWorkouts() {
-        // const selectType = sortForm.querySelector(`.filter-sort__select--type`);
-        // const selectSort = sortForm.querySelector(`.filter-sort__select--sort`);
-
         this._selectSort();
     }
 
+    // Select parameters for sorting workouts
     _selectSort() {
+        // All sorting parameters
         const sortOptions = {
             all: [`date`, `distance`, `duration`],
             running: [`date`, `distance`, `duration`, `cadence`],
             cycling: [`date`, `distance`, `duration`, `elevation`],
         };
+        // Chosed workout type for show and sorting parameters according to type
         const sortOption = sortOptions[selectType.value];
 
+        // Clear sorting option elements
         selectSort.innerHTML = ``;
+        // Adding sort options to select sort element
         sortOption.forEach((option) => {
             const optionElement = document.createElement(`option`);
             optionElement.value = option;
@@ -542,26 +530,36 @@ class App {
             selectSort.append(optionElement);
         });
 
+        // Render workouts according to chosed workout type
         this._renderSortedWorkouts();
     }
 
+    // Render sorted workouts
     _renderSortedWorkouts() {
+        // Sort inputs
         const type = selectType.value;
         const sort = selectSort.value;
 
+        // Clear workout container
         containerWorkouts.querySelectorAll(`.workout`).forEach((workout) => workout.remove());
+        // Remove all workout markers from map
         this.#markers.forEach((marker) => this.#map.removeLayer(marker));
+        // Clear markers array
         this.#markers = [];
 
+        // Sorted workouts array
         let sortedWorkouts;
 
+        // Filter workouts by type
         if (type === `all`) sortedWorkouts = this.#workouts.slice();
         else sortedWorkouts = this.#workouts.filter((workout) => workout.type == `${selectType.value}`);
 
+        // Sort workouts by chosen parameters
         if (sort === `date`) sortedWorkouts.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
         else if (sort === `elevation`) sortedWorkouts.sort((a, b) => a.elevationGain - b.elevationGain);
         else sortedWorkouts.sort((a, b) => a[sort] - b[sort]);
 
+        // Render sorted workouts and workout markers
         sortedWorkouts.forEach((workout) => {
             this._renderWorkout(workout);
             this._renderWorkoutMarker(workout);
@@ -570,10 +568,14 @@ class App {
 
     // Hide sort workouts form
     _hideSort() {
+        // Hiding animation
         sortForm.classList.add(`slide-out-top`);
 
+        // Hide sort workouts form after animation
         setTimeout(() => {
+            // Hide form
             sortForm.classList.add(`hidden`);
+            // Remove animation
             sortForm.classList.remove(`slide-out-top`);
         }, 500);
     }
@@ -714,24 +716,14 @@ class App {
         // Converting strings from locale storage to workout objects
         const data = JSON.parse(localStorage.getItem(`workouts`));
 
-        // Guard clause
+        // If no data from local storage
         if (!data) return;
 
         // Re-create workout objects
         this._recreateWorkouts(data);
 
-        // Render all workouts from local storage in list
-        // this.#workouts.forEach((workout) => {
-        //     this._renderWorkout(workout);
-        // });
-
         // Show delete all workouts button
-        // btnDeleteAllWork.classList.remove(`hidden`);
         this._showDeleteAll();
-
-        // Show sort workouts form
-        // if (this.#workouts.length > 1) this._showSort();
-        // this._showSort();
     }
 
     ///////////////////////////////////////////// HANDLER METHODS
@@ -760,6 +752,7 @@ class App {
                 inputCadence.value = ``;
             }
         }
+        // Focusing on distance input in create new workout form
         if (targetElement.classList.contains(`form`)) targetElement.querySelector(`.form__input--distance`).focus();
     }
 
