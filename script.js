@@ -25,6 +25,8 @@ const selectType = sortForm.querySelector(`.filter-sort__select--type`);
 const selectSort = sortForm.querySelector(`.filter-sort__select--sort`);
 const sortOrder = sortForm.querySelector(`.filter-sort__icon-container`);
 const sortOrderIcon = sortOrder.querySelector(`img`);
+const ascIconSrc = `img/sort-order/sort-ascending.png`;
+const desIconSrc = `img/sort-order/sort-descending.png`;
 
 class App {
     // Loaded leaflet map
@@ -41,7 +43,7 @@ class App {
     #targetWorkout;
     // Current workout element
     #targetWorkoutElement;
-
+    // Default sort order
     #ascendingSort = true;
 
     constructor() {
@@ -524,12 +526,14 @@ class App {
 
     // Render all workouts and workout markers sorted by date
     _renderDefaultSortWorkouts() {
+        // Set type to all
         selectType.value = `all`;
+        // Render workouts by default
         this._selectSort();
-
+        // Set sort order to default
         this.#ascendingSort = true;
-
-        sortOrderIcon.setAttribute(`src`, `sort-ascending.png`);
+        // Set sort order icon to default
+        sortOrderIcon.setAttribute(`src`, ascIconSrc);
     }
 
     // Select parameters for sorting workouts
@@ -578,10 +582,15 @@ class App {
         else sortedWorkouts = this.#workouts.filter((workout) => workout.type == `${selectType.value}`);
 
         // Sort workouts by chosen parameters
-        if (sort === `date`) sortedWorkouts.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-        else if (sort === `elevation`) sortedWorkouts.sort((a, b) => a.elevationGain - b.elevationGain);
-        else sortedWorkouts.sort((a, b) => a[sort] - b[sort]);
+        if (sort === `date`) {
+            sortedWorkouts.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        } else if (sort === `elevation`) {
+            sortedWorkouts.sort((a, b) => a.elevationGain - b.elevationGain);
+        } else {
+            sortedWorkouts.sort((a, b) => a[sort] - b[sort]);
+        }
 
+        // Sort order
         sortedWorkouts = this.#ascendingSort ? sortedWorkouts : sortedWorkouts.reverse();
 
         // Render sorted workouts and workout markers
@@ -589,23 +598,15 @@ class App {
             this._renderWorkout(workout);
             this._renderWorkoutMarker(workout);
         });
-
-        console.log(type, sort);
-        console.log(sortedWorkouts);
-        sortedWorkouts.forEach((work) => console.log(new Date(work.date).getTime()));
     }
 
     // Toggle sort order
     _toggleSortOrder() {
-        // Source for ascending sort icon
-        const src1 = `sort-ascending.png`;
-        // Source for descending sort icon
-        const src2 = `sort-descending.png`;
         // Toggle sort order icon
-        sortOrderIcon.setAttribute(`src`, sortOrderIcon.getAttribute(`src`) === src1 ? src2 : src1);
-
+        sortOrderIcon.setAttribute(`src`, sortOrderIcon.getAttribute(`src`) === ascIconSrc ? desIconSrc : ascIconSrc);
+        // Toggle sort order
         this.#ascendingSort = !this.#ascendingSort;
-
+        // Render ordered workouts
         this._renderSortedWorkouts();
     }
 
@@ -937,6 +938,10 @@ const app = new App();
 // 4) Sort all workouts by certain parameter  +
 // 5) Re-build workout objects from local storage  +
 // 6) More realistic error and confirmation messages
+// 7) Show/hide scroll bar for workout container
+// 8) Modal windows for error and confirmation messages
+// 9) Delete workout confirmation
+// 10) Delete all workouts button for sorted workouts by type
 
 // HARD
 // 1) Position map to show all workouts

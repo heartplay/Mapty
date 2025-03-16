@@ -91,17 +91,6 @@ a:visited {
     }
 }
 
-@keyframes slideOutTop {
-    from {
-        transform: translateY(0);
-        opacity: 1;
-    }
-    to {
-        transform: translateY(-100%);
-        opacity: 0;
-    }
-}
-
 @keyframes slideUp {
     from {
         transform: translateY(0);
@@ -164,10 +153,6 @@ a:visited {
     overflow-x: hidden;
 }
 
-/* .workouts::-webkit-scrollbar {
-    width: 0;
-} */
-
 .workout {
     background-color: var(--color-dark--2);
     border-radius: 5px;
@@ -177,8 +162,6 @@ a:visited {
     grid-template-columns: 1fr 1fr 1fr 1fr;
     gap: 0.75rem 1.5rem;
     position: relative;
-
-    /* transition: transform 0.5s ease; */
 }
 
 .workout--deleting {
@@ -252,6 +235,7 @@ a:visited {
     background: none;
 }
 
+/* Delete all workouts button */
 /* .btn--delete-all-workouts {
     transition: transform 0.5s ease;
 } */
@@ -259,6 +243,11 @@ a:visited {
 .btn--delete-all-workouts--deleting {
     animation: slideOutTop 0.5s ease forwards;
 }
+
+/* Workout container scrollbar */
+/* .workouts::-webkit-scrollbar {
+    width: 0;
+} */
 
 /* NEW WORKOUT FORM */
 .form {
@@ -368,7 +357,7 @@ a:visited {
     cursor: pointer;
 }
 
-/* SORT */
+/* SORT WORKOUTS*/
 .filter-sort {
     display: flex;
     align-items: center;
@@ -376,10 +365,7 @@ a:visited {
     margin-bottom: 0.5rem;
     font-size: 1.5rem;
     color: var(--color-light--2);
-
-    /*  */
     flex-wrap: nowrap;
-    /*  */
     transition: all 0.5s, transform 1ms;
 }
 
@@ -390,9 +376,7 @@ a:visited {
 
 .filter-sort__text {
     font-weight: 600;
-    /*  */
     white-space: nowrap;
-    /*  */
 }
 
 .filter-sort__select {
@@ -411,7 +395,8 @@ a:visited {
     outline: none;
     background-color: #fff;
 }
-/* ................................................... */
+
+/* SORT ORDER BUTTON */
 .filter-sort__icon-container {
     display: inline-flex;
     align-items: center;
@@ -461,7 +446,7 @@ a:visited {
     border-left: 5px solid var(--color-brand--1);
 }
 
-/* remove flag */
+/* remove leaflet and openstreetmap links */
 /* .leaflet-control-attribution {
     display: none;
 } */
