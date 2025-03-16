@@ -198,6 +198,8 @@ class App {
         this.#mapEvent = mapE;
         // Show form with inputs
         form.classList.remove(`hidden`);
+        // Set workout type to running
+        inputTypeForm.value = `running`;
         // Focus on distance input
         inputDistanceForm.focus();
     }
@@ -514,8 +516,8 @@ class App {
         // All sorting parameters
         const sortOptions = {
             all: [`date`, `distance`, `duration`],
-            running: [`date`, `distance`, `duration`, `cadence`],
-            cycling: [`date`, `distance`, `duration`, `elevation`],
+            running: [`date`, `distance`, `duration`, `pace`, `cadence`],
+            cycling: [`date`, `distance`, `duration`, `speed`, `elevation`],
         };
         // Chosed workout type for show and sorting parameters according to type
         const sortOption = sortOptions[selectType.value];
