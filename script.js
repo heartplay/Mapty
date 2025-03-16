@@ -65,17 +65,13 @@ class App {
         inputTypeForm.addEventListener(`change`, (e) => this._toggleCadenceElevationInput(e));
         inputTypeModal.addEventListener(`change`, (e) => this._toggleCadenceElevationInput(e));
 
-        // Click handler for workouts container
-        containerWorkouts.addEventListener(`click`, this._workClickHandler.bind(this));
-
         // Delete all workouts button
         btnDeleteAllWork.addEventListener(`click`, this._deleteAllWorkouts.bind(this));
 
-        // Hide form on pressing "Esc" button
-        document.addEventListener(`keydown`, (e) => {
-            if (form.classList.contains(`hidden`)) return;
-            if (e.key == `Escape`) this._hideForm();
-        });
+        ////////////////// Set event listener helpers
+
+        // Keydown handler for document
+        document.addEventListener(`keydown`, this._documentKeyDownHandler.bind(this));
 
         // Click handler for document
         document.addEventListener(`click`, this._documentClickHandler.bind(this));
@@ -83,13 +79,8 @@ class App {
         // Click handler for editing workout form
         modal.addEventListener(`click`, this._modalClickHandler.bind(this));
 
-        // Edit workout save button
-        btnSave.addEventListener(`click`, this._editWorkout.bind(this));
-
-        // Reset app
-        document.addEventListener(`keydown`, (e) => {
-            if (e.key == `Delete`) this.reset();
-        });
+        // Click handler for workouts container
+        containerWorkouts.addEventListener(`click`, this._workClickHandler.bind(this));
     }
 
     ///////////////////////////////////////////// MAP
@@ -181,13 +172,24 @@ class App {
             // Hide editing workout form
             this._hideModal();
         }
-        // if (e.target.classList.contains(`btn--edit-save`)) {}
+        if (e.target.classList.contains(`btn--edit-save`)) {
+            // Save edited workout
+            this._editWorkout();
+        }
     }
 
-    // Handler for document
+    // Handler click for document
     _documentClickHandler(e) {
         // Hide create workout form if click not on form and map
         if (!(form.contains(e.target) || e.target.closest(`#map`))) this._hideForm();
+    }
+
+    // Handler keydown for document
+    _documentKeyDownHandler(e) {
+        // Hide create new workout form on pressing "Esc" button
+        if (e.key == `Escape` && !form.classList.contains(`hidden`)) this._hideForm();
+        // Reset app for testing
+        if (e.key == `Delete`) this.reset();
     }
 
     ///////////////////////////////////////////// CREATE WORKOUT
@@ -286,9 +288,7 @@ class App {
     }
 
     // Edit workout
-    _editWorkout(e) {
-        e.preventDefault();
-
+    _editWorkout() {
         // Hide input form for creating new workouts
         this._hideForm();
 
@@ -318,6 +318,7 @@ class App {
         // Delete old workout marker
         this._deleteWorkoutMarker(this.#targetWorkout);
 
+        /////////////////
         // // Create new workout marker
         // this._renderWorkoutMarker(newWorkout);
 
@@ -325,6 +326,7 @@ class App {
         // const editedWorkout = this._createWorkoutElement(newWorkout);
         // // Replace edited workout element
         // this.#targetWorkoutElement.replaceWith(editedWorkout);
+        /////////////////
 
         // Find index of edited workout
         const index = this.#workouts.findIndex((el) => el.id == this.#targetWorkout.id);
@@ -358,10 +360,13 @@ class App {
 
     ///////////////////////////////////////////// DELETE WORKOUT
 
+    // Show delete all workouts button
     _showDeleteAll() {
+        // Show button
         btnDeleteAllWork.classList.remove(`hidden`);
+        // Showing animation
         btnDeleteAllWork.classList.add(`slide-in-top`);
-
+        // Remove animation
         setTimeout(() => {
             btnDeleteAllWork.classList.remove(`slide-in-top`);
         }, 500);
@@ -893,7 +898,7 @@ const app = new App();
 // 1) Edit a workout  +
 // 2) Delete a workout   +
 // 3) Delete all workouts   +
-// 4) Sort all workouts by certain parameter
+// 4) Sort all workouts by certain parameter  +
 // 5) Re-build workout objects from local storage  +
 // 6) More realistic error and confirmation messages
 
