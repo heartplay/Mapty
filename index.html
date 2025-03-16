@@ -50,7 +50,7 @@
             <button class="btn--delete-all-workouts hidden">&times;</button>
 
             <ul class="workouts">
-                <form class="form hidden" data-workout="inputs">
+                <form class="create hidden" data-workout="inputs">
                     <div class="form__row">
                         <label class="form__label">Type</label>
                         <select class="form__input form__input--type">
@@ -87,10 +87,10 @@
 
         <div id="map"></div>
 
-        <div class="modal hidden">
-            <button class="btn--close-modal">&times;</button>
-            <h2 class="modal__header">Edit your workout</h2>
-            <form class="form" data-workout="inputs">
+        <div class="edit hidden">
+            <button class="btn--close-edit">&times;</button>
+            <h2 class="edit__header">Edit your workout</h2>
+            <form class="create" data-workout="inputs">
                 <div class="form__row">
                     <label class="form__label">Type</label>
                     <select class="form__input form__input--type">
@@ -115,7 +115,7 @@
                     <input class="form__input form__input--elevation" placeholder="meters" />
                 </div>
             </form>
-            <div class="modal__footer">
+            <div class="edit__footer">
                 <button class="btn--edit-save">Save &rarr;</button>
             </div>
         </div>

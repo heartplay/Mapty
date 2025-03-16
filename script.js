@@ -1,24 +1,22 @@
 'use strict';
 
-const form = document.querySelector('.form');
+const overlay = document.querySelector(`.overlay`);
 const containerWorkouts = document.querySelector('.workouts');
 const btnDeleteAllWork = document.querySelector(`.btn--delete-all-workouts`);
-const modal = document.querySelector(`.modal`);
-const overlay = document.querySelector(`.overlay`);
-const btnCloseModal = document.querySelector(`.btn--close-modal`);
-const btnSave = document.querySelector(`.btn--edit-save`);
 
-const inputTypeForm = form.querySelector('.form__input--type');
-const inputDistanceForm = form.querySelector('.form__input--distance');
-const inputDurationForm = form.querySelector('.form__input--duration');
-const inputCadenceForm = form.querySelector('.form__input--cadence');
-const inputElevationForm = form.querySelector('.form__input--elevation');
+const create = document.querySelector('.create');
+const inputTypeCreate = create.querySelector('.form__input--type');
+const inputDistanceCreate = create.querySelector('.form__input--distance');
+const inputDurationCreate = create.querySelector('.form__input--duration');
+const inputCadenceCreate = create.querySelector('.form__input--cadence');
+const inputElevationCreate = create.querySelector('.form__input--elevation');
 
-const inputTypeModal = modal.querySelector('.form__input--type');
-const inputDistanceModal = modal.querySelector('.form__input--distance');
-const inputDurationModal = modal.querySelector('.form__input--duration');
-const inputCadenceModal = modal.querySelector('.form__input--cadence');
-const inputElevationModal = modal.querySelector('.form__input--elevation');
+const edit = document.querySelector(`.edit`);
+const inputTypeEdit = edit.querySelector('.form__input--type');
+const inputDistanceEdit = edit.querySelector('.form__input--distance');
+const inputDurationEdit = edit.querySelector('.form__input--duration');
+const inputCadenceEdit = edit.querySelector('.form__input--cadence');
+const inputElevationEdit = edit.querySelector('.form__input--elevation');
 
 const sortForm = document.querySelector(`.filter-sort`);
 const selectType = sortForm.querySelector(`.filter-sort__select--type`);
@@ -67,11 +65,11 @@ class App {
         sortOrder.addEventListener(`click`, this._toggleSortOrder.bind(this));
 
         // Event listener for submit on input form
-        form.addEventListener(`submit`, this._newWorkout.bind(this));
+        create.addEventListener(`submit`, this._newWorkout.bind(this));
 
         // Toggling cadence/elevation inputs after selecting running/cycling
-        inputTypeForm.addEventListener(`change`, (e) => this._toggleCadenceElevationInput(e));
-        inputTypeModal.addEventListener(`change`, (e) => this._toggleCadenceElevationInput(e));
+        inputTypeCreate.addEventListener(`change`, (e) => this._toggleCadenceElevationInput(e));
+        inputTypeEdit.addEventListener(`change`, (e) => this._toggleCadenceElevationInput(e));
 
         // Delete all workouts button
         btnDeleteAllWork.addEventListener(`click`, this._deleteAllWorkouts.bind(this));
@@ -85,7 +83,7 @@ class App {
         document.addEventListener(`click`, this._documentClickHandler.bind(this));
 
         // Click handler for editing workout form
-        modal.addEventListener(`click`, this._modalClickHandler.bind(this));
+        edit.addEventListener(`click`, this._editClickHandler.bind(this));
 
         // Click handler for workouts container
         containerWorkouts.addEventListener(`click`, this._workClickHandler.bind(this));
@@ -118,7 +116,7 @@ class App {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         }).addTo(this.#map);
         // Leaflet event listener method for click on map
-        this.#map.on(`click`, this._showForm.bind(this));
+        this.#map.on(`click`, this._showCreate.bind(this));
 
         // Render all workouts and workout markers sorted by default(all workouts sorted by date)
         if (this.#workouts.length) this._renderDefaultSortWorkouts();
@@ -158,7 +156,7 @@ class App {
         // If edit buttom is clicked
         if (e.target.classList.contains(`btn--edit-workout`)) {
             // Show editing workout form
-            this._openModal();
+            this._openEdit();
             return;
         }
 
@@ -173,12 +171,12 @@ class App {
     }
 
     // Handler click for editing workout form
-    _modalClickHandler(e) {
+    _editClickHandler(e) {
         e.preventDefault();
         // If close button is clicked
-        if (e.target.classList.contains(`btn--close-modal`)) {
+        if (e.target.classList.contains(`btn--close-edit`)) {
             // Hide editing workout form
-            this._hideModal();
+            this._hideEdit();
         }
         if (e.target.classList.contains(`btn--edit-save`)) {
             // Save edited workout
@@ -189,13 +187,13 @@ class App {
     // Handler click for document
     _documentClickHandler(e) {
         // Hide create workout form if click not on form and map
-        if (!(form.contains(e.target) || e.target.closest(`#map`))) this._hideForm();
+        if (!(create.contains(e.target) || e.target.closest(`#map`))) this._hideCreate();
     }
 
     // Handler keydown for document
     _documentKeyDownHandler(e) {
         // Hide create new workout form on pressing "Esc" button
-        if (e.key == `Escape` && !form.classList.contains(`hidden`)) this._hideForm();
+        if (e.key == `Escape` && !create.classList.contains(`hidden`)) this._hideCreate();
         // Reset app for testing
         if (e.key == `Delete`) this.reset();
     }
@@ -203,21 +201,21 @@ class App {
     ///////////////////////////////////////////// CREATE WORKOUT
 
     // Show create new workout form after clicking on map
-    _showForm(mapE) {
+    _showCreate(mapE) {
         // Getting leaflet event object
         this.#mapEvent = mapE;
         // Show form with inputs
-        form.classList.remove(`hidden`);
+        create.classList.remove(`hidden`);
         // Set inputs to default
         // Set workout type to running
-        inputTypeForm.value = `running`;
+        inputTypeCreate.value = `running`;
         // Remove hiding classes
-        inputCadenceForm.closest(`.form__row`).classList.remove(`form__row--hidden`);
-        inputElevationForm.closest(`.form__row`).classList.remove(`form__row--hidden`);
+        inputCadenceCreate.closest(`.form__row`).classList.remove(`form__row--hidden`);
+        inputElevationCreate.closest(`.form__row`).classList.remove(`form__row--hidden`);
         // Hide elevation gain input
-        inputElevationForm.closest(`.form__row`).classList.add(`form__row--hidden`);
+        inputElevationCreate.closest(`.form__row`).classList.add(`form__row--hidden`);
         // Focus on distance input
-        inputDistanceForm.focus();
+        inputDistanceCreate.focus();
     }
 
     // Getting workout and rendering
@@ -226,14 +224,14 @@ class App {
         e.preventDefault();
 
         // If creating new workout form is hidden
-        if (form.classList.contains(`hidden`)) return;
+        if (create.classList.contains(`hidden`)) return;
 
         // Get data from form(workout type, distance, duration, cadence and elevation)
-        const type = inputTypeForm.value;
-        const distance = +inputDistanceForm.value;
-        const duration = +inputDurationForm.value;
-        const cadence = +inputCadenceForm.value;
-        const elevation = +inputElevationForm.value;
+        const type = inputTypeCreate.value;
+        const distance = +inputDistanceCreate.value;
+        const duration = +inputDurationCreate.value;
+        const cadence = +inputCadenceCreate.value;
+        const elevation = +inputElevationCreate.value;
         // Getting coordinates of click on map
         const { lat, lng } = this.#mapEvent.latlng;
 
@@ -257,61 +255,65 @@ class App {
         this._renderDefaultSortWorkouts();
 
         // Hide form, clear inputs
-        this._hideForm();
+        this._hideCreate();
 
         // Show delete all workouts button if hidden
         if (btnDeleteAllWork.classList.contains(`hidden`)) this._showDeleteAll();
     }
 
     // Hide create new workout form
-    _hideForm() {
+    _hideCreate() {
         // Clear all inputs
-        inputDistanceForm.value = inputDurationForm.value = inputCadenceForm.value = inputElevationForm.value = ``;
+        inputDistanceCreate.value =
+            inputDurationCreate.value =
+            inputCadenceCreate.value =
+            inputElevationCreate.value =
+                ``;
 
         // Hide input form
         // form.style.display = `none`;
-        form.classList.add(`hidden`);
+        create.classList.add(`hidden`);
         // setTimeout(() => (form.style.display = `grid`), 1000);
     }
 
     ///////////////////////////////////////////// EDIT WORKOUT
 
     // Show workout edit form and overlay
-    _openModal() {
+    _openEdit() {
         // Show workout edit form
-        modal.classList.remove(`hidden`);
+        edit.classList.remove(`hidden`);
         // Show overlay
         overlay.classList.remove(`hidden`);
 
         // Show current workout distance, duration, type and cadence/elevation gain according to type
-        inputDistanceModal.value = this.#targetWorkout.distance;
-        inputDurationModal.value = this.#targetWorkout.duration;
-        inputTypeModal.value = this.#targetWorkout.type;
+        inputDistanceEdit.value = this.#targetWorkout.distance;
+        inputDurationEdit.value = this.#targetWorkout.duration;
+        inputTypeEdit.value = this.#targetWorkout.type;
 
         // Show/hide cadence/elevation input
-        inputCadenceModal.closest(`.form__row`).classList.remove(`form__row--hidden`);
-        inputElevationModal.closest(`.form__row`).classList.remove(`form__row--hidden`);
+        inputCadenceEdit.closest(`.form__row`).classList.remove(`form__row--hidden`);
+        inputElevationEdit.closest(`.form__row`).classList.remove(`form__row--hidden`);
         if (this.#targetWorkout.type == `running`) {
-            inputElevationModal.closest(`.form__row`).classList.add(`form__row--hidden`);
-            inputCadenceModal.value = this.#targetWorkout.cadence;
+            inputElevationEdit.closest(`.form__row`).classList.add(`form__row--hidden`);
+            inputCadenceEdit.value = this.#targetWorkout.cadence;
         }
         if (this.#targetWorkout.type == `cycling`) {
-            inputCadenceModal.closest(`.form__row`).classList.add(`form__row--hidden`);
-            inputElevationModal.value = this.#targetWorkout.elevationGain;
+            inputCadenceEdit.closest(`.form__row`).classList.add(`form__row--hidden`);
+            inputElevationEdit.value = this.#targetWorkout.elevationGain;
         }
     }
 
     // Edit workout
     _editWorkout() {
         // Hide input form for creating new workouts
-        this._hideForm();
+        this._hideCreate();
 
         // Edited workout type, distance, duration, cadence and elevation
-        const type = inputTypeModal.value;
-        const distance = +inputDistanceModal.value;
-        const duration = +inputDurationModal.value;
-        const cadence = +inputCadenceModal.value;
-        const elevation = +inputElevationModal.value;
+        const type = inputTypeEdit.value;
+        const distance = +inputDistanceEdit.value;
+        const duration = +inputDurationEdit.value;
+        const cadence = +inputCadenceEdit.value;
+        const elevation = +inputElevationEdit.value;
 
         // Check if data is valid
         if (!this._validData(type, distance, duration, cadence, elevation))
@@ -357,13 +359,13 @@ class App {
         /////////////////
 
         // Hide edit workout form
-        this._hideModal();
+        this._hideEdit();
     }
 
     // Hide workout edit form and overlay
-    _hideModal() {
+    _hideEdit() {
         // Hide workout edit form
-        modal.classList.add(`hidden`);
+        edit.classList.add(`hidden`);
         // Hide overlay
         overlay.classList.add(`hidden`);
         // Delete current workout
@@ -695,7 +697,7 @@ class App {
     // Render workout on list
     _renderWorkout(workout) {
         const workoutElement = this._createWorkoutElement(workout);
-        form.insertAdjacentElement(`afterend`, workoutElement);
+        create.insertAdjacentElement(`afterend`, workoutElement);
     }
 
     // Rendering workout marker on map
@@ -797,7 +799,7 @@ class App {
             }
         }
         // Focusing on distance input in create new workout form
-        if (targetElement.classList.contains(`form`)) targetElement.querySelector(`.form__input--distance`).focus();
+        if (targetElement.classList.contains(`create`)) targetElement.querySelector(`.form__input--distance`).focus();
     }
 
     // Check if input data is valid
