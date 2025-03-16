@@ -24,6 +24,7 @@ const sortForm = document.querySelector(`.filter-sort`);
 const selectType = sortForm.querySelector(`.filter-sort__select--type`);
 const selectSort = sortForm.querySelector(`.filter-sort__select--sort`);
 const sortOrder = sortForm.querySelector(`.filter-sort__icon-container`);
+const sortOrderIcon = sortOrder.querySelector(`img`);
 
 class App {
     // Loaded leaflet map
@@ -40,6 +41,8 @@ class App {
     #targetWorkout;
     // Current workout element
     #targetWorkoutElement;
+
+    #ascendingSort = true;
 
     constructor() {
         // Get from local storage all workouts
@@ -203,8 +206,14 @@ class App {
         this.#mapEvent = mapE;
         // Show form with inputs
         form.classList.remove(`hidden`);
+        // Set inputs to default
         // Set workout type to running
         inputTypeForm.value = `running`;
+        // Remove hiding classes
+        inputCadenceForm.closest(`.form__row`).classList.remove(`form__row--hidden`);
+        inputElevationForm.closest(`.form__row`).classList.remove(`form__row--hidden`);
+        // Hide elevation gain input
+        inputElevationForm.closest(`.form__row`).classList.add(`form__row--hidden`);
         // Focus on distance input
         inputDistanceForm.focus();
     }
@@ -517,6 +526,10 @@ class App {
     _renderDefaultSortWorkouts() {
         selectType.value = `all`;
         this._selectSort();
+
+        this.#ascendingSort = true;
+
+        sortOrderIcon.setAttribute(`src`, `sort-ascending.png`);
     }
 
     // Select parameters for sorting workouts
@@ -569,24 +582,31 @@ class App {
         else if (sort === `elevation`) sortedWorkouts.sort((a, b) => a.elevationGain - b.elevationGain);
         else sortedWorkouts.sort((a, b) => a[sort] - b[sort]);
 
+        sortedWorkouts = this.#ascendingSort ? sortedWorkouts : sortedWorkouts.reverse();
+
         // Render sorted workouts and workout markers
         sortedWorkouts.forEach((workout) => {
             this._renderWorkout(workout);
             this._renderWorkoutMarker(workout);
         });
+
+        console.log(type, sort);
+        console.log(sortedWorkouts);
+        sortedWorkouts.forEach((work) => console.log(new Date(work.date).getTime()));
     }
 
     // Toggle sort order
     _toggleSortOrder() {
-        // Getting image element
-        const img = sortOrder.querySelector(`img`);
         // Source for ascending sort icon
         const src1 = `sort-ascending.png`;
         // Source for descending sort icon
         const src2 = `sort-descending.png`;
-
         // Toggle sort order icon
-        img.setAttribute(`src`, img.getAttribute(`src`) === src1 ? src2 : src1);
+        sortOrderIcon.setAttribute(`src`, sortOrderIcon.getAttribute(`src`) === src1 ? src2 : src1);
+
+        this.#ascendingSort = !this.#ascendingSort;
+
+        this._renderSortedWorkouts();
     }
 
     // Hide sort workouts form
