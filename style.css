@@ -252,9 +252,9 @@ a:visited {
     background: none;
 }
 
-.btn--delete-all-workouts {
-    /* transition: transform 0.5s ease; */
-}
+/* .btn--delete-all-workouts {
+    transition: transform 0.5s ease;
+} */
 
 .btn--delete-all-workouts--deleting {
     animation: slideOutTop 0.5s ease forwards;
@@ -373,10 +373,13 @@ a:visited {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 0.5rem;
     font-size: 1.5rem;
     color: var(--color-light--2);
 
+    /*  */
+    flex-wrap: nowrap;
+    /*  */
     transition: all 0.5s, transform 1ms;
 }
 
@@ -387,6 +390,9 @@ a:visited {
 
 .filter-sort__text {
     font-weight: 600;
+    /*  */
+    white-space: nowrap;
+    /*  */
 }
 
 .filter-sort__select {
@@ -404,6 +410,24 @@ a:visited {
 .filter-sort__select:focus {
     outline: none;
     background-color: #fff;
+}
+/* ................................................... */
+.filter-sort__icon-container {
+    display: inline-flex;
+    align-items: center;
+    height: 100%;
+    margin-left: 0.5rem;
+}
+
+.filter-sort__icon {
+    height: 1.8em;
+    width: auto;
+    vertical-align: middle;
+}
+
+.filter-sort__icon-container:hover .filter-sort__icon {
+    opacity: 0.8;
+    cursor: pointer;
 }
 
 /* MAP */

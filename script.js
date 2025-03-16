@@ -23,6 +23,7 @@ const inputElevationModal = modal.querySelector('.form__input--elevation');
 const sortForm = document.querySelector(`.filter-sort`);
 const selectType = sortForm.querySelector(`.filter-sort__select--type`);
 const selectSort = sortForm.querySelector(`.filter-sort__select--sort`);
+const sortOrder = sortForm.querySelector(`.filter-sort__icon-container`);
 
 class App {
     // Loaded leaflet map
@@ -57,6 +58,8 @@ class App {
         selectType.addEventListener(`change`, this._selectSort.bind(this));
         // Sort workouts by certain parameter
         selectSort.addEventListener(`change`, this._renderSortedWorkouts.bind(this));
+        // Sort workouts order
+        sortOrder.addEventListener(`click`, this._toggleSortOrder.bind(this));
 
         // Event listener for submit on input form
         form.addEventListener(`submit`, this._newWorkout.bind(this));
@@ -571,6 +574,19 @@ class App {
             this._renderWorkout(workout);
             this._renderWorkoutMarker(workout);
         });
+    }
+
+    // Toggle sort order
+    _toggleSortOrder() {
+        // Getting image element
+        const img = sortOrder.querySelector(`img`);
+        // Source for ascending sort icon
+        const src1 = `sort-ascending.png`;
+        // Source for descending sort icon
+        const src2 = `sort-descending.png`;
+
+        // Toggle sort order icon
+        img.setAttribute(`src`, img.getAttribute(`src`) === src1 ? src2 : src1);
     }
 
     // Hide sort workouts form
