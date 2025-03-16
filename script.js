@@ -128,7 +128,7 @@ class App {
         this.#targetWorkout.click();
     }
 
-    ///////////////////////////////////////////// CLICK HANDLERS
+    ///////////////////////////////////////////// EVENT HANDLERS
 
     // Handler click for workout container
     _workClickHandler(e) {
@@ -233,17 +233,17 @@ class App {
         // Add new object to workout array
         this.#workouts.push(workout);
 
+        // Set local storage for all workouts
+        this._setLocalStorage();
+
         // Show sort workouts form
         if (sortForm.classList.contains(`hidden`)) this._showSort();
 
-        // Render all workouts sorted by default(by date)
+        // Render all workouts including new workout sorted by default(by date)
         this._renderDefaultSortWorkouts();
 
         // Hide form, clear inputs
         this._hideForm();
-
-        // Set local storage for all workouts
-        this._setLocalStorage();
 
         // Show delete all workouts button if hidden
         if (btnDeleteAllWork.classList.contains(`hidden`)) this._showDeleteAll();
@@ -315,9 +315,6 @@ class App {
             this.#targetWorkout.date
         );
 
-        // Delete old workout marker
-        this._deleteWorkoutMarker(this.#targetWorkout);
-
         /////////////////
         // // Create new workout marker
         // this._renderWorkoutMarker(newWorkout);
@@ -336,6 +333,9 @@ class App {
 
         // Set local storage for all workouts
         this._setLocalStorage();
+
+        // Delete old workout marker
+        this._deleteWorkoutMarker(this.#targetWorkout);
 
         /////////////////
         // Render all workouts sorted by default(by date)
