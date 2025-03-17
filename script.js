@@ -26,6 +26,8 @@ const sortOrderIcon = sortOrder.querySelector(`img`);
 const ascIconSrc = `img/sort-order/sort-ascending.png`;
 const desIconSrc = `img/sort-order/sort-descending.png`;
 
+const deleteWorkoutMessage = document.querySelector(`.delete__workout`);
+
 class App {
     // Loaded leaflet map
     #map;
@@ -87,6 +89,9 @@ class App {
 
         // Click handler for workouts container
         containerWorkouts.addEventListener(`click`, this._workClickHandler.bind(this));
+
+        // Click handler for message container
+        deleteWorkoutMessage.addEventListener(`click`, this._deleteClickHandler.bind(this));
     }
 
     ///////////////////////////////////////////// MAP
@@ -130,6 +135,7 @@ class App {
                 duration: 1, // Duration of animation
             },
         });
+
         // Test
         this.#targetWorkout.click();
     }
@@ -146,28 +152,39 @@ class App {
         // Find workout according to clicked element
         this.#targetWorkout = this.#workouts.find((work) => work.id == this.#targetWorkoutElement.dataset.id);
 
+        this._moveToWorkout();
+
+        // // If delete button is clicked
+        // if (e.target.classList.contains(`btn--delete-workout`)) {
+        //     // Delete workout
+        //     this._deleteWorkout();
+        //     return;
+        // }
         // If delete button is clicked
         if (e.target.classList.contains(`btn--delete-workout`)) {
-            // Delete workout
-            this._deleteWorkout();
+            this.#targetWorkoutElement.classList.add(`active`);
+
+            // workMark.classList.add(`active`);
+
+            this._showDeleteMessage(e);
             return;
         }
 
         // If edit buttom is clicked
         if (e.target.classList.contains(`btn--edit-workout`)) {
             // Show editing workout form
-            this._openEdit();
+            this._showEdit();
             return;
         }
 
-        // Focusing map view on workout marker
-        this._moveToWorkout();
+        // // Focusing map view on workout marker
+        // this._moveToWorkout();
 
-        // Delete current workout
-        this.#targetWorkout = null;
+        // // Delete current workout
+        // this.#targetWorkout = null;
 
-        // Delete current workout element
-        this.#targetWorkoutElement = null;
+        // // Delete current workout element
+        // this.#targetWorkoutElement = null;
     }
 
     // Handler click for editing workout form
@@ -184,6 +201,17 @@ class App {
         }
     }
 
+    // Handler click for message window
+    _deleteClickHandler(e) {
+        if (e.target.classList.contains(`yes`)) {
+            this._hideDelete();
+            this._deleteWorkout();
+        }
+        if (e.target.classList.contains(`no`)) {
+            this._hideDelete();
+        }
+    }
+
     // Handler click for document
     _documentClickHandler(e) {
         // Hide create workout form if click not on form and map
@@ -196,6 +224,18 @@ class App {
         if (e.key == `Escape` && !create.classList.contains(`hidden`)) this._hideCreate();
         // Reset app for testing
         if (e.key == `Delete`) this.reset();
+    }
+
+    ///////////////////////////////////////////// MESSAGE WINDOW
+
+    _showMessage() {
+        deleteWorkoutMessage.classList.remove(`hidden`);
+        overlay.classList.remove(`hidden`);
+    }
+
+    _hideMessage() {
+        deleteWorkoutMessage.classList.add(`hidden`);
+        overlay.classList.add(`hidden`);
     }
 
     ///////////////////////////////////////////// CREATE WORKOUT
@@ -279,7 +319,7 @@ class App {
     ///////////////////////////////////////////// EDIT WORKOUT
 
     // Show workout edit form and overlay
-    _openEdit() {
+    _showEdit() {
         // Show workout edit form
         edit.classList.remove(`hidden`);
         // Show overlay
@@ -375,6 +415,29 @@ class App {
     }
 
     ///////////////////////////////////////////// DELETE WORKOUT
+
+    _showDeleteMessage(e) {
+        const x = e.clientX;
+        const y = e.clientY;
+        // this._showMessage();
+
+        deleteWorkoutMessage.classList.remove(`hidden`);
+        overlay.classList.remove(`hidden`);
+
+        const height = deleteWorkoutMessage.offsetHeight;
+
+        // const margin = Number.parseFloat(getComputedStyle(this.#targetWorkoutElement).marginBottom);
+        // const offset = this.#targetWorkoutElement.offsetHeight + margin;
+        // message.style.position = 'fixed';
+        // message.style.transform = 'none';
+        deleteWorkoutMessage.style.left = `${x + 30}px`;
+        deleteWorkoutMessage.style.top = `${y - height / 2}px`;
+
+        // const popup = workMark.getPopup();
+        // console.log(popup);
+        // const popupElement = popup.getElement();
+        // console.log(popupElement);
+    }
 
     // Show delete all workouts button
     _showDeleteAll() {
@@ -497,6 +560,13 @@ class App {
         this.#map.removeLayer(workMark);
         // Delete workout marker from array
         this.#markers.splice(workMarkInd, 1);
+    }
+
+    _hideDelete() {
+        deleteWorkoutMessage.classList.add(`hidden`);
+        overlay.classList.add(`hidden`);
+
+        this.#targetWorkoutElement.classList.remove(`active`);
     }
 
     // Hide delete all workouts button
