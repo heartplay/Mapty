@@ -561,10 +561,6 @@ a:visited {
     border-left: 5px solid var(--color-brand--1);
 }
 
-/* .leaflet-popup .active {
-    z-index: 1500;
-} */
-
 /* remove leaflet and openstreetmap links */
 /* .leaflet-control-attribution {
     display: none;

@@ -90,7 +90,7 @@ class App {
         // Click handler for workouts container
         containerWorkouts.addEventListener(`click`, this._workClickHandler.bind(this));
 
-        // Click handler for message container
+        // Click handler for delete confirm element
         deleteWorkoutMessage.addEventListener(`click`, this._deleteClickHandler.bind(this));
     }
 
@@ -152,20 +152,14 @@ class App {
         // Find workout according to clicked element
         this.#targetWorkout = this.#workouts.find((work) => work.id == this.#targetWorkoutElement.dataset.id);
 
+        // Focusing map on current workout
         this._moveToWorkout();
 
-        // // If delete button is clicked
-        // if (e.target.classList.contains(`btn--delete-workout`)) {
-        //     // Delete workout
-        //     this._deleteWorkout();
-        //     return;
-        // }
         // If delete button is clicked
         if (e.target.classList.contains(`btn--delete-workout`)) {
+            // Select current workout element
             this.#targetWorkoutElement.classList.add(`active`);
-
-            // workMark.classList.add(`active`);
-
+            // Show delete workout window
             this._showDeleteMessage(e);
             return;
         }
@@ -203,10 +197,14 @@ class App {
 
     // Handler click for message window
     _deleteClickHandler(e) {
+        // Deleting confirmed
         if (e.target.classList.contains(`yes`)) {
+            // Hide delete confirm element
             this._hideDelete();
+            // Delete current workout
             this._deleteWorkout();
         }
+        // Not confirmed
         if (e.target.classList.contains(`no`)) {
             this._hideDelete();
         }
@@ -228,15 +226,15 @@ class App {
 
     ///////////////////////////////////////////// MESSAGE WINDOW
 
-    _showMessage() {
-        deleteWorkoutMessage.classList.remove(`hidden`);
-        overlay.classList.remove(`hidden`);
-    }
+    // _showMessage() {
+    //     deleteWorkoutMessage.classList.remove(`hidden`);
+    //     overlay.classList.remove(`hidden`);
+    // }
 
-    _hideMessage() {
-        deleteWorkoutMessage.classList.add(`hidden`);
-        overlay.classList.add(`hidden`);
-    }
+    // _hideMessage() {
+    //     deleteWorkoutMessage.classList.add(`hidden`);
+    //     overlay.classList.add(`hidden`);
+    // }
 
     ///////////////////////////////////////////// CREATE WORKOUT
 
@@ -408,35 +406,30 @@ class App {
         edit.classList.add(`hidden`);
         // Hide overlay
         overlay.classList.add(`hidden`);
-        // Delete current workout
+        // Reset current workout
         this.#targetWorkout = null;
-        // Delete current workout element
+        // Reset current workout element
         this.#targetWorkoutElement = null;
     }
 
     ///////////////////////////////////////////// DELETE WORKOUT
 
+    // Show delete confirm window
     _showDeleteMessage(e) {
+        // Coordinates of mouse click
         const x = e.clientX;
         const y = e.clientY;
-        // this._showMessage();
 
+        // Show delete confirm window
         deleteWorkoutMessage.classList.remove(`hidden`);
+        // Show overlay
         overlay.classList.remove(`hidden`);
 
+        // Height of delete confirm window
         const height = deleteWorkoutMessage.offsetHeight;
-
-        // const margin = Number.parseFloat(getComputedStyle(this.#targetWorkoutElement).marginBottom);
-        // const offset = this.#targetWorkoutElement.offsetHeight + margin;
-        // message.style.position = 'fixed';
-        // message.style.transform = 'none';
+        // Move delete confirm window to mouse cursor
         deleteWorkoutMessage.style.left = `${x + 30}px`;
         deleteWorkoutMessage.style.top = `${y - height / 2}px`;
-
-        // const popup = workMark.getPopup();
-        // console.log(popup);
-        // const popupElement = popup.getElement();
-        // console.log(popupElement);
     }
 
     // Show delete all workouts button
@@ -465,7 +458,7 @@ class App {
         // Delete workout from array
         this.#workouts.splice(workInd, 1);
 
-        // Delete current workout
+        // Reset current workout
         this.#targetWorkout = null;
 
         // Set local storage for remaining workouts
@@ -562,11 +555,18 @@ class App {
         this.#markers.splice(workMarkInd, 1);
     }
 
+    // Hide delete confirm window
     _hideDelete() {
+        // Hide window
         deleteWorkoutMessage.classList.add(`hidden`);
+        // Hide overlay
         overlay.classList.add(`hidden`);
-
+        // Remove current workout element selection
         this.#targetWorkoutElement.classList.remove(`active`);
+        // Reset current workout
+        this.#targetWorkout = null;
+        // Reset current workout element
+        this.#targetWorkoutElement = null;
     }
 
     // Hide delete all workouts button
@@ -1012,8 +1012,8 @@ const app = new App();
 // 6) More realistic error and confirmation messages
 // 7) Show/hide scroll bar for workout container  +
 // 8) Modal windows for error and confirmation messages
-// 9) Delete workout confirmation
-// 10) Delete all workouts button for sorted workouts by type
+// 9) Delete workout confirmation  +
+// 10) Delete all workouts button for filtered workouts
 
 // HARD
 // 1) Position map to show all workouts
