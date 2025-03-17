@@ -30,6 +30,12 @@
         <title>mapty // Map your workouts</title>
     </head>
     <body>
+        <!-- Overlay -->
+        <div class="overlay hidden"></div>
+
+        <!-- Sidebar overlay -->
+        <div class="sidebar-overlay hidden"></div>
+
         <div class="sidebar">
             <img src="img/logo/logo.png" alt="Logo" class="logo" />
 
@@ -49,7 +55,7 @@
             </div>
 
             <!-- Delete all workouts button -->
-            <button class="btn--delete-all-workouts hidden">&times;</button>
+            <button class="btn--delete-all-workouts hidden"></button>
 
             <!-- Workout list -->
             <ul class="workouts">
@@ -89,9 +95,6 @@
             </p>
         </div>
 
-        <!-- Map -->
-        <div id="map"></div>
-
         <!-- Edit workout form -->
         <div class="edit hidden">
             <button class="btn--close-edit">&times;</button>
@@ -126,17 +129,24 @@
             </div>
         </div>
 
-        <!-- Overlay -->
-        <div class="overlay hidden"></div>
+        <!-- Map -->
+        <div id="map"></div>
 
         <!-- Error and confirmation message -->
 
         <!-- Delete workout message -->
-        <div class="delete__workout hidden">
-            <!-- <button class="btn--close-message">&times;</button> -->
-            <h1 class="delete__workout__header">Delete this workout?</h1>
+        <div class="delete-workout hidden">
+            <h1 class="delete-workout__header">Delete this workout?</h1>
+            <div class="delete-workout__footer">
+                <button class="btn--confirm-delete-workout yes">Yes</button>
+                <button class="btn--confirm-delete-workout no">No</button>
+            </div>
+        </div>
 
-            <div class="delete__workout__footer">
+        <!-- Delete all workouts message -->
+        <div class="delete--all hidden">
+            <h1 class="delete--all__header">Are you sure you want to delete all workouts?</h1>
+            <div class="delete--all__footer">
                 <button class="btn--confirm-delete-workout yes">Yes</button>
                 <button class="btn--confirm-delete-workout no">No</button>
             </div>

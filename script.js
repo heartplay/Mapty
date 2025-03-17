@@ -1,6 +1,7 @@
 'use strict';
 
 const overlay = document.querySelector(`.overlay`);
+const sidebarOverlay = document.querySelector(`.sidebar-overlay`);
 const containerWorkouts = document.querySelector('.workouts');
 const btnDeleteAllWork = document.querySelector(`.btn--delete-all-workouts`);
 
@@ -26,7 +27,8 @@ const sortOrderIcon = sortOrder.querySelector(`img`);
 const ascIconSrc = `img/sort-order/sort-ascending.png`;
 const desIconSrc = `img/sort-order/sort-descending.png`;
 
-const deleteWorkoutMessage = document.querySelector(`.delete__workout`);
+const deleteWorkoutMessage = document.querySelector(`.delete-workout`);
+const deleteAllWorkMessage = document.querySelector(`.delete--all`);
 
 class App {
     // Loaded leaflet map
@@ -74,7 +76,7 @@ class App {
         inputTypeEdit.addEventListener(`change`, (e) => this._toggleCadenceElevationInput(e));
 
         // Delete all workouts button
-        btnDeleteAllWork.addEventListener(`click`, this._deleteAllWorkouts.bind(this));
+        btnDeleteAllWork.addEventListener(`click`, this._showDeleteAllMessage.bind(this));
 
         ////////////////// Set event listener helpers
 
@@ -90,8 +92,11 @@ class App {
         // Click handler for workouts container
         containerWorkouts.addEventListener(`click`, this._workClickHandler.bind(this));
 
-        // Click handler for delete confirm element
+        // Click handler for delete confirm window
         deleteWorkoutMessage.addEventListener(`click`, this._deleteClickHandler.bind(this));
+
+        // Click handler for delete all confirm window
+        deleteAllWorkMessage.addEventListener(`click`, this._deleteAllClickHandler.bind(this));
     }
 
     ///////////////////////////////////////////// MAP
@@ -123,7 +128,7 @@ class App {
         // Leaflet event listener method for click on map
         this.#map.on(`click`, this._showCreate.bind(this));
 
-        // Render all workouts and workout markers sorted by default(all workouts sorted by date)
+        // Default sidebar condition
         if (this.#workouts.length) this._renderDefaultSortWorkouts();
     }
 
@@ -141,6 +146,14 @@ class App {
     }
 
     ///////////////////////////////////////////// EVENT HANDLERS
+
+    // Handler keydown for document
+    _documentKeyDownHandler(e) {
+        // Hide create new workout form on pressing "Esc" button
+        if (e.key == `Escape` && !create.classList.contains(`hidden`)) this._hideCreate();
+        // Reset app for testing
+        if (e.key == `Delete`) this.reset();
+    }
 
     // Handler click for workout container
     _workClickHandler(e) {
@@ -195,18 +208,33 @@ class App {
         }
     }
 
-    // Handler click for message window
+    // Handler click for delete workout confirm window
     _deleteClickHandler(e) {
-        // Deleting confirmed
+        // Delete confirmed
         if (e.target.classList.contains(`yes`)) {
-            // Hide delete confirm element
-            this._hideDelete();
             // Delete current workout
             this._deleteWorkout();
+            // Hide delete confirm window
+            this._hideDeleteMessage();
         }
         // Not confirmed
         if (e.target.classList.contains(`no`)) {
-            this._hideDelete();
+            this._hideDeleteMessage();
+        }
+    }
+
+    // Handler click for delete all workouts confirm window
+    _deleteAllClickHandler(e) {
+        // Delete all confirmed
+        if (e.target.classList.contains(`yes`)) {
+            // Hide delete all confirm window
+            this._hideDeleteAllMessage();
+            // Delete all workouts
+            this._deleteAllWorkouts();
+        }
+        // Not confirmed
+        if (e.target.classList.contains(`no`)) {
+            this._hideDeleteAllMessage();
         }
     }
 
@@ -214,14 +242,6 @@ class App {
     _documentClickHandler(e) {
         // Hide create workout form if click not on form and map
         if (!(create.contains(e.target) || e.target.closest(`#map`))) this._hideCreate();
-    }
-
-    // Handler keydown for document
-    _documentKeyDownHandler(e) {
-        // Hide create new workout form on pressing "Esc" button
-        if (e.key == `Escape` && !create.classList.contains(`hidden`)) this._hideCreate();
-        // Reset app for testing
-        if (e.key == `Delete`) this.reset();
     }
 
     ///////////////////////////////////////////// MESSAGE WINDOW
@@ -254,6 +274,9 @@ class App {
         inputElevationCreate.closest(`.form__row`).classList.add(`form__row--hidden`);
         // Focus on distance input
         inputDistanceCreate.focus();
+
+        // Default sidebar condition
+        this._renderDefaultSortWorkouts();
     }
 
     // Getting workout and rendering
@@ -289,14 +312,14 @@ class App {
         // Show sort workouts form
         if (sortForm.classList.contains(`hidden`)) this._showSort();
 
-        // Render all workouts including new workout sorted by default(by date)
+        // Default sidebar condition
         this._renderDefaultSortWorkouts();
 
         // Hide form, clear inputs
         this._hideCreate();
 
         // Show delete all workouts button if hidden
-        if (btnDeleteAllWork.classList.contains(`hidden`)) this._showDeleteAll();
+        if (btnDeleteAllWork.classList.contains(`hidden`)) this._showDeleteAllBtn();
     }
 
     // Hide create new workout form
@@ -392,7 +415,7 @@ class App {
         this._deleteWorkoutMarker(this.#targetWorkout);
 
         /////////////////
-        // Render all workouts sorted by default(by date)
+        // Default sidebar condition
         this._renderDefaultSortWorkouts();
         /////////////////
 
@@ -423,7 +446,7 @@ class App {
         // Show delete confirm window
         deleteWorkoutMessage.classList.remove(`hidden`);
         // Show overlay
-        overlay.classList.remove(`hidden`);
+        sidebarOverlay.classList.remove(`hidden`);
 
         // Height of delete confirm window
         const height = deleteWorkoutMessage.offsetHeight;
@@ -432,8 +455,26 @@ class App {
         deleteWorkoutMessage.style.top = `${y - height / 2}px`;
     }
 
+    // Show delete all workouts confirm window
+    _showDeleteAllMessage() {
+        // Text for window according to type of workouts to be removed
+        let innerText = `Are you sure you want to delete all ${
+            selectType.value === `all` ? `` : selectType.value
+        } workouts?`;
+        // Set text for window
+        deleteAllWorkMessage.querySelector(`.delete--all__header`).textContent = innerText;
+        // Show delete all confirm window
+        deleteAllWorkMessage.classList.remove(`hidden`);
+        // Show overlay
+        overlay.classList.remove(`hidden`);
+    }
+
     // Show delete all workouts button
-    _showDeleteAll() {
+    _showDeleteAllBtn() {
+        // Text for button according to type of workouts to be removed
+        let innerText = `Delete all ${selectType.value === `all` ? `` : selectType.value} workouts`;
+        // Set text for button
+        btnDeleteAllWork.textContent = innerText;
         // Show button
         btnDeleteAllWork.classList.remove(`hidden`);
         // Showing animation
@@ -458,26 +499,29 @@ class App {
         // Delete workout from array
         this.#workouts.splice(workInd, 1);
 
-        // Reset current workout
-        this.#targetWorkout = null;
-
         // Set local storage for remaining workouts
-        this._setLocalStorage();
+        if (this.#workouts.length) {
+            this._setLocalStorage();
+        }
+
+        // If no workouts
+        if (!this.#workouts.length) {
+            // Clear local storage
+            localStorage.removeItem(`workouts`);
+            // Hide delete all button
+            this._hideDeleteAllBtn();
+            // Hide sort form
+            this._hideSort();
+        }
+
+        // If no sorted workouts remain after deleting
+        if (selectType.value !== `all` && !this.#workouts.find((workout) => workout.type == selectType.value)) {
+            this._hideDeleteAllBtn();
+        }
 
         // Delete workout animation
         this.#targetWorkoutElement.classList.add('workout--deleting');
 
-        // If no workouts
-        if (!this.#workouts.length) {
-            // Delete local storage
-            localStorage.removeItem(`workouts`);
-
-            // Hide delete all workouts button
-            this._hideDeleteAll();
-
-            // Hide sort workouts form
-            this._hideSort();
-        }
         // Deleted workout next siblings animation
         if (siblings) {
             // Calc offset for animation
@@ -496,7 +540,7 @@ class App {
         setTimeout(() => {
             // Delete workout element in list
             this.#targetWorkoutElement.remove();
-            // Delete current workout element
+            // Reset current workout element
             this.#targetWorkoutElement = null;
 
             // End of animation for deleted workout siblings
@@ -511,33 +555,54 @@ class App {
 
     // Delete all workouts
     _deleteAllWorkouts() {
-        if (confirm(`Are you sure you want to delete all workouts?`)) {
-            // Delete all workouts animation
-            const removedElements = containerWorkouts.querySelectorAll(`.workout`);
-            removedElements.forEach((el) => el.classList.add('workout--deleting'));
+        // Workout elements to be removed
+        const elementsToRemove = containerWorkouts.querySelectorAll(`.workout`);
+        // Delete workout elements animation
+        elementsToRemove.forEach((el) => el.classList.add('workout--deleting'));
 
+        // Workout type
+        const type = selectType.value === `all` ? null : selectType.value;
+
+        // If all workouts
+        if (!type) {
             // Delete all workout markers on map
             this.#markers.forEach((marker) => this.#map.removeLayer(marker));
-
             // Delete all workout markers from array
             this.#markers = [];
             // Delete all workouts
             this.#workouts = [];
-            // Delete local storage
+        }
+
+        // If only running or cycling
+        if (type) {
+            // Filter all workouts by type
+            const workoutsToRemove = this.#workouts.filter((workout) => workout.type == type);
+            workoutsToRemove.forEach((workout) => {
+                // Find workout index
+                const workInd = this.#workouts.indexOf(workout);
+                // Delete workout from all workouts
+                this.#workouts.splice(workInd, 1);
+                // Delete workout marker
+                this._deleteWorkoutMarker(workout);
+            });
+        }
+
+        // If no remaining workouts
+        if (!this.#workouts.length) {
+            // Clear local storage
             localStorage.removeItem(`workouts`);
-
-            // Hide delete all button
-            this._hideDeleteAll();
-
             // Hide sort workouts form
             this._hideSort();
-
-            // Delete workout elements after buttons hiding animation
-            setTimeout(() => {
-                // Delete all workout elements from list
-                removedElements.forEach((el) => el.remove());
-            }, 500);
         }
+
+        // Hide delete all button
+        this._hideDeleteAllBtn();
+
+        // Delete workout elements after buttons hiding animation
+        setTimeout(() => {
+            // Delete all workout elements from list
+            elementsToRemove.forEach((el) => el.remove());
+        }, 500);
     }
 
     // Delete workout marker from map
@@ -556,21 +621,27 @@ class App {
     }
 
     // Hide delete confirm window
-    _hideDelete() {
+    _hideDeleteMessage() {
         // Hide window
         deleteWorkoutMessage.classList.add(`hidden`);
         // Hide overlay
-        overlay.classList.add(`hidden`);
+        sidebarOverlay.classList.add(`hidden`);
         // Remove current workout element selection
         this.#targetWorkoutElement.classList.remove(`active`);
         // Reset current workout
         this.#targetWorkout = null;
-        // Reset current workout element
-        this.#targetWorkoutElement = null;
+    }
+
+    // Hide delete all confirm window
+    _hideDeleteAllMessage() {
+        // Hide delete all confirm window
+        deleteAllWorkMessage.classList.add(`hidden`);
+        // Hide overlay
+        overlay.classList.add(`hidden`);
     }
 
     // Hide delete all workouts button
-    _hideDeleteAll() {
+    _hideDeleteAllBtn() {
         // Hiding animation
         btnDeleteAllWork.classList.add(`slide-out-top`);
         // Hide button after animation
@@ -596,7 +667,7 @@ class App {
         }, 500);
     }
 
-    // Render all workouts and workout markers sorted by date
+    // Render all workouts in list and workout markers sorted by date, default sidebar condition
     _renderDefaultSortWorkouts() {
         // Set type to all
         selectType.value = `all`;
@@ -650,8 +721,10 @@ class App {
         let sortedWorkouts;
 
         // Filter workouts by type
-        if (type === `all`) sortedWorkouts = this.#workouts.slice();
-        else sortedWorkouts = this.#workouts.filter((workout) => workout.type == `${selectType.value}`);
+        sortedWorkouts =
+            type === `all` ? this.#workouts.slice() : this.#workouts.filter((workout) => workout.type == `${type}`);
+        // if (type === `all`) sortedWorkouts = this.#workouts.slice();
+        // else sortedWorkouts = this.#workouts.filter((workout) => workout.type == `${selectType.value}`);
 
         // Sort workouts by chosen parameters
         if (sort === `date`) {
@@ -662,6 +735,10 @@ class App {
             sortedWorkouts.sort((a, b) => a[sort] - b[sort]);
         }
 
+        console.log(sortedWorkouts.length);
+        if (!sortedWorkouts.length) this._hideDeleteAllBtn();
+        else this._showDeleteAllBtn();
+
         // Sort order
         sortedWorkouts = this.#ascendingSort ? sortedWorkouts : sortedWorkouts.reverse();
 
@@ -670,6 +747,9 @@ class App {
             this._renderWorkout(workout);
             this._renderWorkoutMarker(workout);
         });
+
+        // this._showDeleteAllBtn();
+        // this._hideDeleteAllBtn();
     }
 
     // Toggle sort order
@@ -839,7 +919,7 @@ class App {
         this._recreateWorkouts(data);
 
         // Show delete all workouts button
-        this._showDeleteAll();
+        this._showDeleteAllBtn();
     }
 
     ///////////////////////////////////////////// HANDLER METHODS
@@ -906,7 +986,7 @@ class App {
 
     ///////////////////////////////////////////// TEST
 
-    // Delete local storage for workouts
+    // Clear local storage and reload page
     reset() {
         // Delete local storage
         localStorage.removeItem(`workouts`);
@@ -1014,6 +1094,7 @@ const app = new App();
 // 8) Modal windows for error and confirmation messages
 // 9) Delete workout confirmation  +
 // 10) Delete all workouts button for filtered workouts
+// 11) Workout selection in list when editing and deleting
 
 // HARD
 // 1) Position map to show all workouts
