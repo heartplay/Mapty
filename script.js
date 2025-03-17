@@ -717,25 +717,16 @@ class App {
         // Clear markers array
         this.#markers = [];
 
-        // Sorted workouts array
-        let sortedWorkouts;
-
         // Filter workouts by type
-        sortedWorkouts =
+        let sortedWorkouts =
             type === `all` ? this.#workouts.slice() : this.#workouts.filter((workout) => workout.type == `${type}`);
-        // if (type === `all`) sortedWorkouts = this.#workouts.slice();
-        // else sortedWorkouts = this.#workouts.filter((workout) => workout.type == `${selectType.value}`);
 
         // Sort workouts by chosen parameters
-        if (sort === `date`) {
-            sortedWorkouts.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-        } else if (sort === `elevation`) {
-            sortedWorkouts.sort((a, b) => a.elevationGain - b.elevationGain);
-        } else {
-            sortedWorkouts.sort((a, b) => a[sort] - b[sort]);
-        }
+        if (sort === `date`) sortedWorkouts.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        if (sort === `elevation`) sortedWorkouts.sort((a, b) => a.elevationGain - b.elevationGain);
+        if (sort !== `date` && sort !== `elevation`) sortedWorkouts.sort((a, b) => a[sort] - b[sort]);
 
-        console.log(sortedWorkouts.length);
+        // If no filtered workouts hide delete all button
         if (!sortedWorkouts.length) this._hideDeleteAllBtn();
         else this._showDeleteAllBtn();
 
@@ -747,9 +738,6 @@ class App {
             this._renderWorkout(workout);
             this._renderWorkoutMarker(workout);
         });
-
-        // this._showDeleteAllBtn();
-        // this._hideDeleteAllBtn();
     }
 
     // Toggle sort order
