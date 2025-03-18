@@ -320,7 +320,6 @@ a:visited {
     background-color: var(--color-brand--2);
     transform: skewX(15deg);
     z-index: -1;
-
     border-radius: 2px;
 }
 
@@ -439,6 +438,11 @@ a:visited {
     background-color: var(--color-dark--2);
     color: white;
     cursor: pointer;
+}
+
+.btn--edit-save:hover {
+    background-color: var(--color-light--2);
+    color: var(--color-dark--2);
 }
 
 /* SORT WORKOUTS FORM*/
