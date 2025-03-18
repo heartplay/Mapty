@@ -58,7 +58,7 @@ class App {
         // Show sort workouts form
         if (this.#workouts.length) this._showSort();
 
-        ////////////////// Set event listeners
+        ////////////////// Attach event listeners
 
         // Toggling parameters for sort workouts
         // Sort by workout type
@@ -78,7 +78,7 @@ class App {
         // Delete all workouts button
         btnDeleteAllWork.addEventListener(`click`, this._showDeleteAllMessage.bind(this));
 
-        ////////////////// Set event listener helpers
+        ////////////////// Attach event listener helpers
 
         // Keydown handler for document
         document.addEventListener(`keydown`, this._documentKeyDownHandler.bind(this));
@@ -128,7 +128,7 @@ class App {
         // Leaflet event listener method for click on map
         this.#map.on(`click`, this._showCreate.bind(this));
 
-        // Default sidebar condition
+        // Default sidebar and map condition
         if (this.#workouts.length) this._renderDefaultSortWorkouts();
     }
 
@@ -170,8 +170,11 @@ class App {
 
         // If delete button is clicked
         if (e.target.classList.contains(`btn--delete-workout`)) {
-            // Select current workout element
-            this.#targetWorkoutElement.classList.add(`active`);
+            // Hide edit workout window and overlay if edit form is show
+            if (!edit.classList.contains(`hidden`)) {
+                overlay.classList.add(`hidden`);
+                edit.classList.add(`hidden`);
+            }
             // Show delete workout window
             this._showDeleteMessage(e);
             return;
@@ -179,19 +182,21 @@ class App {
 
         // If edit buttom is clicked
         if (e.target.classList.contains(`btn--edit-workout`)) {
+            // Hide delete workout window and sidebar overlay if delete message is show
+            if (!deleteWorkoutMessage.classList.contains(`hidden`)) {
+                deleteWorkoutMessage.classList.add(`hidden`);
+                sidebarOverlay.classList.add(`hidden`);
+            }
             // Show editing workout form
             this._showEdit();
             return;
         }
 
-        // // Focusing map view on workout marker
-        // this._moveToWorkout();
+        // Delete current workout
+        this.#targetWorkout = null;
 
-        // // Delete current workout
-        // this.#targetWorkout = null;
-
-        // // Delete current workout element
-        // this.#targetWorkoutElement = null;
+        // Delete current workout element
+        this.#targetWorkoutElement = null;
     }
 
     // Handler click for editing workout form
@@ -275,7 +280,7 @@ class App {
         // Focus on distance input
         inputDistanceCreate.focus();
 
-        // Default sidebar condition
+        // Default sidebar and map condition
         this._renderDefaultSortWorkouts();
     }
 
@@ -312,7 +317,7 @@ class App {
         // Show sort workouts form
         if (sortForm.classList.contains(`hidden`)) this._showSort();
 
-        // Default sidebar condition
+        // Default sidebar and map condition
         this._renderDefaultSortWorkouts();
 
         // Hide form, clear inputs
@@ -341,6 +346,10 @@ class App {
 
     // Show workout edit form and overlay
     _showEdit() {
+        // If form is showing
+        if (!edit.classList.contains(`hidden`)) return;
+        // Select current workout element
+        this.#targetWorkoutElement.classList.add(`active`);
         // Show workout edit form
         edit.classList.remove(`hidden`);
         // Show overlay
@@ -414,10 +423,8 @@ class App {
         // Delete old workout marker
         this._deleteWorkoutMarker(this.#targetWorkout);
 
-        /////////////////
-        // Default sidebar condition
+        // Default sidebar and map condition
         this._renderDefaultSortWorkouts();
-        /////////////////
 
         // Hide edit workout form
         this._hideEdit();
@@ -431,6 +438,8 @@ class App {
         overlay.classList.add(`hidden`);
         // Reset current workout
         this.#targetWorkout = null;
+        // Remove current workout element selection
+        this.#targetWorkoutElement.classList.remove(`active`);
         // Reset current workout element
         this.#targetWorkoutElement = null;
     }
@@ -439,6 +448,10 @@ class App {
 
     // Show delete confirm window
     _showDeleteMessage(e) {
+        // If window is showing
+        if (!deleteWorkoutMessage.classList.contains(`hidden`)) return;
+        // Select current workout element
+        this.#targetWorkoutElement.classList.add(`active`);
         // Coordinates of mouse click
         const x = e.clientX;
         const y = e.clientY;
@@ -493,8 +506,11 @@ class App {
         // Delete workout marker from map and array
         this._deleteWorkoutMarker(this.#targetWorkout);
 
+        // Workout element to be deleted
+        const workElToDelete = this.#targetWorkoutElement;
+
         // Find all next siblings of deleted workout
-        const siblings = this._getWorkoutNextSiblings(this.#targetWorkoutElement);
+        const siblings = this._getWorkoutNextSiblings(workElToDelete);
 
         // Delete workout from array
         this.#workouts.splice(workInd, 1);
@@ -514,19 +530,20 @@ class App {
             this._hideSort();
         }
 
-        // If no sorted workouts remain after deleting
+        // If no filtered workouts remain after deleting
         if (selectType.value !== `all` && !this.#workouts.find((workout) => workout.type == selectType.value)) {
             this._hideDeleteAllBtn();
         }
 
         // Delete workout animation
-        this.#targetWorkoutElement.classList.add('workout--deleting');
+        // this.#targetWorkoutElement.classList.add('workout--deleting');
+        workElToDelete.classList.add('workout--deleting');
 
         // Deleted workout next siblings animation
         if (siblings) {
             // Calc offset for animation
-            const margin = Number.parseFloat(getComputedStyle(this.#targetWorkoutElement).marginBottom);
-            const offset = this.#targetWorkoutElement.offsetHeight + margin;
+            const margin = Number.parseFloat(getComputedStyle(workElToDelete).marginBottom);
+            const offset = workElToDelete.offsetHeight + margin;
             // Animation for each deleted element sibling
             siblings.forEach((sibling) => {
                 // Reposition
@@ -539,11 +556,9 @@ class App {
         // Delete workout after delete animation
         setTimeout(() => {
             // Delete workout element in list
-            this.#targetWorkoutElement.remove();
-            // Reset current workout element
-            this.#targetWorkoutElement = null;
+            workElToDelete.remove();
 
-            // End of animation for deleted workout siblings
+            // Remove animation for deleted workout siblings
             if (siblings) {
                 siblings.forEach((sibling) => {
                     sibling.style.transform = '';
@@ -630,6 +645,8 @@ class App {
         this.#targetWorkoutElement.classList.remove(`active`);
         // Reset current workout
         this.#targetWorkout = null;
+        // Reset current workout element
+        this.#targetWorkoutElement = null;
     }
 
     // Hide delete all confirm window
@@ -667,7 +684,7 @@ class App {
         }, 500);
     }
 
-    // Render all workouts in list and workout markers sorted by date, default sidebar condition
+    // Render all workouts in list and workout markers sorted by date, default sidebar and map condition
     _renderDefaultSortWorkouts() {
         // Set type to all
         selectType.value = `all`;
@@ -1081,8 +1098,8 @@ const app = new App();
 // 7) Show/hide scroll bar for workout container  +
 // 8) Modal windows for error and confirmation messages
 // 9) Delete workout confirmation  +
-// 10) Delete all workouts button for filtered workouts
-// 11) Workout selection in list when editing and deleting
+// 10) Delete all workouts button for filtered workouts  +
+// 11) Workout selection in list when editing and deleting  +
 
 // HARD
 // 1) Position map to show all workouts

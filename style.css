@@ -54,7 +54,7 @@ body {
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
-    z-index: 500;
+    z-index: 1100;
     transition: all 0.5s;
 }
 
@@ -198,7 +198,7 @@ a:visited {
 }
 
 .active {
-    z-index: 1000;
+    z-index: 1500;
 }
 
 .workout--deleting {
@@ -369,7 +369,7 @@ a:visited {
     background-color: var(--color-dark--1);
     padding: 2rem 2rem;
     box-shadow: 0 4rem 6rem rgba(0, 0, 0, 0.3);
-    z-index: 1000;
+    z-index: 1500;
     transition: all 0.5s;
 }
 
@@ -478,7 +478,7 @@ a:visited {
     padding: 2rem 2rem;
     border-radius: 5px;
     box-shadow: 0 4rem 6rem rgba(0, 0, 0, 0.3);
-    z-index: 1000;
+    z-index: 1500;
     /* transition: all 0.5s; */
 }
 
@@ -533,7 +533,7 @@ a:visited {
     padding: 2rem 2rem;
     border-radius: 5px;
     box-shadow: 0 4rem 6rem rgba(0, 0, 0, 0.3);
-    z-index: 1000;
+    z-index: 1500;
     transition: all 0.5s;
 }
 
