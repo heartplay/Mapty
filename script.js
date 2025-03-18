@@ -479,11 +479,16 @@ class App {
     // Show delete all workouts confirm window
     _showDeleteAllMessage() {
         // Text for window according to type of workouts to be removed
-        let innerText = `Are you sure you want to delete all ${
-            selectType.value === `all` ? `` : selectType.value
+        // let html = `Are you sure you want to delete all ${
+        //     selectType.value === `all` ? `` : `<span class="${selectType.value}">${selectType.value}</span>`
+        // } workouts?`;
+        let html = `Are you sure you want to delete all ${
+            selectType.value === `all`
+                ? ``
+                : `<span class="workout-type ${selectType.value}">${selectType.value}</span>`
         } workouts?`;
         // Set text for window
-        deleteAllWorkMessage.querySelector(`.delete--all__header`).textContent = innerText;
+        deleteAllWorkMessage.querySelector(`.delete--all__header`).innerHTML = html;
         // Show delete all confirm window
         deleteAllWorkMessage.classList.remove(`hidden`);
         // Show overlay
@@ -492,10 +497,13 @@ class App {
 
     // Show delete all workouts button
     _showDeleteAllBtn() {
-        // Text for button according to type of workouts to be removed
-        let innerText = `Delete all ${selectType.value === `all` ? `` : selectType.value} workouts`;
+        let html = `Delete all ${
+            selectType.value === `all`
+                ? ``
+                : `<span class="workout-type ${selectType.value}">${selectType.value}</span>`
+        } workouts`;
         // Set text for button
-        btnDeleteAllWork.textContent = innerText;
+        btnDeleteAllWork.innerHTML = html;
         // Show button
         btnDeleteAllWork.classList.remove(`hidden`);
         // Showing animation
