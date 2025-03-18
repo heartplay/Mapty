@@ -265,6 +265,7 @@ class App {
 
     // Show create new workout form after clicking on map
     _showCreate(mapE) {
+        // mapE.preventDefault();
         // Getting leaflet event object
         this.#mapEvent = mapE;
         // Show form with inputs
@@ -282,6 +283,13 @@ class App {
 
         // Default sidebar and map condition
         this._renderDefaultSortWorkouts();
+
+        // Getting coordinates of click on map
+        const { lat, lng } = this.#mapEvent.latlng;
+        // Getting current map zoom
+        const currentZoom = this.#map.getZoom();
+        // Setview on map click
+        this.#map.setView([lat, lng], currentZoom);
     }
 
     // Getting workout and rendering
@@ -1096,10 +1104,9 @@ const app = new App();
 // 5) Re-build workout objects from local storage  +
 // 6) More realistic error and confirmation messages
 // 7) Show/hide scroll bar for workout container  +
-// 8) Modal windows for error and confirmation messages
-// 9) Delete workout confirmation  +
-// 10) Delete all workouts button for filtered workouts  +
-// 11) Workout selection in list when editing and deleting  +
+// 8) Delete workout confirmation  +
+// 9) Delete all workouts button for filtered workouts  +
+// 10) Workout selection in list when editing and deleting  +
 
 // HARD
 // 1) Position map to show all workouts
